@@ -4,8 +4,9 @@ import { authStore } from '@/stores/auth.store';
 import { googleAuthService } from '@/services/google-auth.service';
 import { toastService } from '@/services/toast.service';
 import { communityService } from '@/services/community.service';
+import '@/styles/auth.css';
 
-// تعريف الدوال العامة فوراً - قبل أي تفاعل من المستخدم
+// تعريف الدوال العامة للقالب
 (window as any).openAccountSheet = () => authStore.openSheet('dashboard');
 (window as any).closeAccountSheet = () => authStore.closeSheet();
 (window as any).openCommunityMembers = () => authStore.openSheet('members');
@@ -34,7 +35,7 @@ function initApp() {
     communityService.addCurrentUserToCommunity();
   }
 
-  // تحديث القائمة المنسدلة بعد أن يصبح التطبيق جاهزاً
+  // تحديث القائمة المنسدلة بعد التجهيز
   if (typeof (window as any).updateAccountUI === 'function') {
     (window as any).updateAccountUI();
   }

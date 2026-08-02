@@ -11,7 +11,7 @@ export default defineConfig({
   },
   build: {
     target: 'es2020',
-    cssCodeSplit: false,
+    cssCodeSplit: false, // لدمج كل الـ CSS في ملف واحد
     minify: 'terser',
     rollupOptions: {
       output: {

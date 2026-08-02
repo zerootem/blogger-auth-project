@@ -1,4 +1,4 @@
-import { Match, Switch } from 'solid-js';
+import { createEffect, onCleanup, Match, Switch } from 'solid-js';
 import { authStore } from '@/stores/auth.store';
 import { LoginPage } from '@/components/account/LoginPage';
 import { DashboardPage } from '@/components/account/DashboardPage';
@@ -16,33 +16,26 @@ const sheetTitles: Record<string, string> = {
 };
 
 export function App() {
+  // إضافة/إزالة overflow:hidden من body عند فتح/إغلاق النافذة
+  createEffect(() => {
+    if (authStore.isSheetOpen()) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  });
+
+  // إزالة التأثير عند تدمير المكون
+  onCleanup(() => {
+    document.body.style.overflow = '';
+  });
+
   const handleClose = () => authStore.closeSheet();
 
   return (
-    <div
-      class="lgnBottomSheet"
-      style={{
-        visibility: authStore.isSheetOpen() ? 'visible' : 'hidden',
-        opacity: authStore.isSheetOpen() ? 1 : 0,
-        'pointer-events': authStore.isSheetOpen() ? 'auto' : 'none',
-      }}
-    >
-      <div
-        class="lgnOverlay"
-        onClick={handleClose}
-        style={{
-          visibility: authStore.isSheetOpen() ? 'visible' : 'hidden',
-          opacity: authStore.isSheetOpen() ? 1 : 0,
-        }}
-      />
-      <div
-        class="lgnSheet"
-        style={{
-          visibility: authStore.isSheetOpen() ? 'visible' : 'hidden',
-          opacity: authStore.isSheetOpen() ? 1 : 0,
-          transform: authStore.isSheetOpen() ? 'scale(1)' : 'scale(0.8)',
-        }}
-      >
+    <div class={`lgnBottomSheet ${authStore.isSheetOpen() ? 'visible' : ''}`}>
+      <div class="lgnOverlay" onClick={handleClose} />
+      <div class="lgnSheet">
         <div class="lgnHeader">
           <h3 id="sheetTitle">
             {authStore.isLoggedIn()
