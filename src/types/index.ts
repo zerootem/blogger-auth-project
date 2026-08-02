@@ -35,7 +35,7 @@ export type SheetView =
   | 'dashboard'
   | 'members'
   | 'profile'
-  | 'chat'
+  | 'stats'
   | 'admin';
 
 export type LoginMethod = 'google' | 'guest';
