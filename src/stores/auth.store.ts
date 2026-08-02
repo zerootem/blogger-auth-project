@@ -11,6 +11,7 @@ const [joinDate, setJoinDate] = createSignal(storageService.getUserJoinDate());
 const [sessions, setSessions] = createSignal<UserSession[]>(storageService.getSessions());
 const [sheetView, setSheetView] = createSignal<SheetView>('dashboard');
 const [isSheetOpen, setIsSheetOpen] = createSignal(false);
+const [isDropdownOpen, setIsDropdownOpen] = createSignal(false);
 
 const isAdmin = createMemo(() => userEmail() === CONFIG.adminEmail);
 const userInitial = createMemo(() => {
@@ -38,6 +39,7 @@ function logout() {
   setSessions([]);
   setSheetView('dashboard');
   setIsSheetOpen(false);
+  setIsDropdownOpen(false);
 }
 
 function updateProfile(name: string, picture: string) {
@@ -53,10 +55,19 @@ function refreshSessions() {
 function openSheet(view: SheetView = 'dashboard') {
   setSheetView(view);
   setIsSheetOpen(true);
+  setIsDropdownOpen(false);
 }
 
 function closeSheet() {
   setIsSheetOpen(false);
+}
+
+function toggleDropdown() {
+  setIsDropdownOpen(!isDropdownOpen());
+}
+
+function closeDropdown() {
+  setIsDropdownOpen(false);
 }
 
 export const authStore = {
@@ -68,6 +79,7 @@ export const authStore = {
   sessions,
   sheetView,
   isSheetOpen,
+  isDropdownOpen,
   isAdmin,
   userInitial,
   login,
@@ -76,5 +88,7 @@ export const authStore = {
   refreshSessions,
   openSheet,
   closeSheet,
+  toggleDropdown,
+  closeDropdown,
   setSheetView,
 };

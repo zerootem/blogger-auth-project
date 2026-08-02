@@ -1,8 +1,13 @@
 import { authStore } from '@/stores/auth.store';
 
 export function AccountIcon() {
+  const handleClick = (e: MouseEvent) => {
+    e.preventDefault();
+    authStore.toggleDropdown();
+  };
+
   return (
-    <span class="tAcnt">
+    <span class="tAcnt" onClick={handleClick} style="cursor:pointer;">
       <span>
         {authStore.isLoggedIn() && authStore.userPicture() ? (
           <img

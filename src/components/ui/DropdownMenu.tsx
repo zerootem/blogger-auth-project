@@ -1,3 +1,4 @@
+import { onCleanup, onMount } from 'solid-js';
 import { authStore } from '@/stores/auth.store';
 import type { SheetView } from '@/types';
 
@@ -9,6 +10,8 @@ interface MenuItem {
 }
 
 export function DropdownMenu() {
+  let menuRef: HTMLDivElement | undefined;
+
   const menuItems: MenuItem[] = [
     {
       label: 'الحساب',
@@ -35,18 +38,40 @@ export function DropdownMenu() {
 
   const handleClick = (view: SheetView) => {
     authStore.openSheet(view);
-    const toggle = document.getElementById('acntToggle') as HTMLInputElement;
-    if (toggle) toggle.checked = false;
+    authStore.closeDropdown();
   };
 
   const handleLogout = () => {
     authStore.logout();
-    const toggle = document.getElementById('acntToggle') as HTMLInputElement;
-    if (toggle) toggle.checked = false;
+    authStore.closeDropdown();
   };
 
+  // إغلاق القائمة عند النقر خارجها
+  const handleClickOutside = (e: MouseEvent) => {
+    if (menuRef && !menuRef.contains(e.target as Node)) {
+      authStore.closeDropdown();
+    }
+  };
+
+  onMount(() => {
+    document.addEventListener('click', handleClickOutside);
+  });
+
+  onCleanup(() => {
+    document.removeEventListener('click', handleClickOutside);
+  });
+
   return (
-    <div class="acntW" data-text="">
+    <div
+      ref={menuRef}
+      class="acntW"
+      data-text=""
+      style={{
+        visibility: authStore.isDropdownOpen() ? 'visible' : 'hidden',
+        opacity: authStore.isDropdownOpen() ? 1 : 0,
+        transform: authStore.isDropdownOpen() ? 'scale(1)' : 'scale(0.8)',
+      }}
+    >
       {authStore.isLoggedIn() ? (
         <>
           {menuItems
@@ -107,9 +132,8 @@ export function DropdownMenu() {
           type="button"
           aria-label="تسجيل الدخول"
           onClick={() => {
-            const toggle = document.getElementById('acntToggle') as HTMLInputElement;
-            if (toggle) toggle.checked = false;
             authStore.openSheet('dashboard');
+            authStore.closeDropdown();
           }}
           style={{
             background: 'none',
