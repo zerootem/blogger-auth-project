@@ -11,10 +11,9 @@ export function DashboardPage() {
   let picFileInput: HTMLInputElement | undefined;
   let picUrlInput: HTMLInputElement | undefined;
 
-  // ضمان وجود جلسة حالية وتحديث القائمة
+  // ضمان وجود جلسة حالية
   const ensureCurrentSession = () => {
     let sessions = storageService.getSessions();
-    // البحث عن جلسة حالية موجودة
     const hasCurrent = sessions.some(s => s.isCurrent);
     if (!hasCurrent) {
       const newSession: UserSession = {
@@ -32,28 +31,24 @@ export function DashboardPage() {
         ip: 'محلي',
         isCurrent: true
       };
-      sessions.push(newSession);
-      storageService.saveSessions?.(sessions) || storageService.addSession(newSession);
+      // استخدام addSession التي تحفظ داخليًا
+      storageService.addSession(newSession);
     }
     authStore.refreshSessions();
   };
 
   onMount(() => {
     ensureCurrentSession();
-    authStore.refreshSessions();
   });
 
-  // استخراج الجلسات مرتبة تنازلياً
   const sessions = () => {
     const raw = authStore.sessions();
     return raw.slice().sort((a, b) => b.id - a.id);
   };
 
-  const handleRemoveSession = (index: number) => {
-    // نبحث عن الجلسة في المصفوفة الأصلية المرتبة تصاعدياً
+  const handleRemoveSession = (idx: number) => {
+    const sessionToRemove = sessions()[idx];
     const allSessions = storageService.getSessions();
-    // نجد الجلسة المقابلة بناءً على id
-    const sessionToRemove = sessions()[index];
     const realIndex = allSessions.findIndex(s => s.id === sessionToRemove.id);
     if (realIndex !== -1) {
       storageService.removeSession(realIndex);
