@@ -5,22 +5,18 @@ import { googleAuthService } from '@/services/google-auth.service';
 import { toastService } from '@/services/toast.service';
 import { communityService } from '@/services/community.service';
 
-// تعريض دوال للقالب ليتمكن من استدعائها
-function exposeGlobalFunctions() {
-  (window as any).openAccountSheet = () => authStore.openSheet('dashboard');
-  (window as any).closeAccountSheet = () => authStore.closeSheet();
-  (window as any).openCommunityMembers = () => authStore.openSheet('members');
-  (window as any).openCommunityChat = () => authStore.openSheet('chat');
-  (window as any).openAdminPanel = () => authStore.openSheet('admin');
-  (window as any).handleLogout = () => {
-    authStore.logout();
-    toastService.show('تم تسجيل الخروج بنجاح!');
-  };
-}
+// تعريف الدوال العامة فوراً - قبل أي تفاعل من المستخدم
+(window as any).openAccountSheet = () => authStore.openSheet('dashboard');
+(window as any).closeAccountSheet = () => authStore.closeSheet();
+(window as any).openCommunityMembers = () => authStore.openSheet('members');
+(window as any).openCommunityChat = () => authStore.openSheet('chat');
+(window as any).openAdminPanel = () => authStore.openSheet('admin');
+(window as any).handleLogout = () => {
+  authStore.logout();
+  toastService.show('تم تسجيل الخروج بنجاح!');
+};
 
 function initApp() {
-  exposeGlobalFunctions();
-
   const root = document.getElementById('modpro-auth-root');
   if (root) {
     render(() => <App />, root);
@@ -36,6 +32,11 @@ function initApp() {
 
   if (authStore.isLoggedIn()) {
     communityService.addCurrentUserToCommunity();
+  }
+
+  // تحديث القائمة المنسدلة بعد أن يصبح التطبيق جاهزاً
+  if (typeof (window as any).updateAccountUI === 'function') {
+    (window as any).updateAccountUI();
   }
 }
 
