@@ -1,8 +1,12 @@
+/**
+ * إعدادات مشروع مود ويب للمصادقة
+ */
 export interface AuthConfig {
   googleClientId: string;
   adminEmail: string;
   projectName: string;
   bloggerDomain: string;
+  allowedDomains: string[];
 }
 
 const defaultConfig: AuthConfig = {
@@ -10,6 +14,13 @@ const defaultConfig: AuthConfig = {
   adminEmail: 'modweeb3@gmail.com',
   projectName: 'مود ويب',
   bloggerDomain: '',
+  allowedDomains: [
+    'localhost',
+    '127.0.0.1',
+    'modweeb.com',
+    'mdwnplus.blogspot.com',
+    'zerootem.github.io',
+  ],
 };
 
 export function getConfig(): AuthConfig {
