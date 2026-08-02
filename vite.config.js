@@ -12,5 +12,12 @@ export default defineConfig({
         target: 'es2020',
         cssCodeSplit: false,
         minify: 'terser',
+        rollupOptions: {
+            output: {
+                entryFileNames: 'assets/auth.js',
+                chunkFileNames: 'assets/auth-chunk.js',
+                assetFileNames: 'assets/auth.[ext]',
+            },
+        },
     },
 });
