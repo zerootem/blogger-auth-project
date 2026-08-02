@@ -92,11 +92,8 @@
   max-height: calc(100vh - 120px);
 }
 
-/* استجابة للموبايل: تتحول إلى bottom sheet */
 @media screen and (max-width: 500px) {
-  .lgnBottomSheet {
-    align-items: flex-end;
-  }
+  .lgnBottomSheet { align-items: flex-end; }
   .lgnSheet {
     width: 100%;
     max-width: 100%;
@@ -111,18 +108,12 @@
     left: 0;
     right: 0;
   }
-  .lgnBottomSheet.visible .lgnSheet {
-    bottom: 0;
-    top: unset;
-    transform: none;
-  }
+  .lgnBottomSheet.visible .lgnSheet { bottom: 0; top: unset; transform: none; }
 }
 
-[dir="rtl"] .lgnSheet {
-  transform-origin: center;
-}
+[dir="rtl"] .lgnSheet { transform-origin: center; }
 
-/* ===== باقي التنسيقات (نفسها دون تغيير) ===== */
+/* بطاقة الحساب والجلسات (كما هي) */
 .acctCard{background:var(--contentB);border-radius:12px;border:1px solid var(--contentL);padding:12px 14px;margin-bottom:8px}
 .acctUser{display:flex;align-items:center;gap:12px;margin-bottom:10px;position:relative}
 .acctAvatar{width:56px;height:56px;border-radius:8px;border:2px solid var(--contentL);flex-shrink:0;overflow:hidden;background:var(--linkB)}
@@ -142,6 +133,7 @@
 .btnLogout{background:var(--linkB);color:#fff}
 .btnRemove{background:#ef4444;color:#fff}
 
+/* صفحة تسجيل الدخول (guestCard) */
 .guestCard{max-width:320px;margin:0 auto;padding:8px 0}
 .guestCard .gTitle{font-size:1.1rem;font-weight:700;color:var(--headC);text-align:center;margin:0 0 2px}
 .guestCard .gSub{font-size:.8rem;color:var(--bodyCa);text-align:center;margin:0 0 16px}
@@ -161,6 +153,7 @@
 .guestCard .gSecured{text-align:center;font-size:.65rem;color:var(--bodyCa);margin-top:10px;opacity:.7}
 .guestCard .gSecured span{color:var(--linkC);font-weight:500}
 
+/* لوحة الإعدادات */
 .settingsTrigger{position:absolute;top:8px;inset-inline-end:8px;background:none;border:1px solid var(--contentL);border-radius:8px;padding:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--bodyC);transition:background .2s,border-color .2s}
 .settingsTrigger:hover{background:var(--bodyB);border-color:var(--bodyCa)}
 .settingsTrigger svg{width:18px;height:18px;stroke:currentColor;fill:none}
@@ -173,6 +166,7 @@
 .editPanel .button.primary{display:block;width:100%;padding:7px 12px;border:none;border-radius:6px;background:var(--linkB);color:#fff;font-size:.75rem;font-weight:500;cursor:pointer;transition:opacity .2s;text-align:center}
 .editPanel .button.primary:hover{opacity:.9}
 
+/* الأعضاء */
 .memberItem{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bodyB);border-radius:8px;border:1px solid var(--contentL);margin-bottom:6px;cursor:pointer;transition:all .2s}
 .memberItem:hover{background:var(--contentBs);border-color:var(--linkC)}
 .memberItem .avatar{width:36px;height:36px;border-radius:50%;border:2px solid var(--contentL);flex-shrink:0;overflow:hidden;background:var(--linkB)}
@@ -183,6 +177,7 @@
 .memberItem .status.online{color:#22c55e}
 .memberItem .status.offline{color:#94a3b8}
 
+/* الملف الشخصي */
 .profileView{text-align:center;padding:10px 0}
 .profileView .avatar{width:80px;height:80px;border-radius:50%;border:3px solid var(--contentL);margin:0 auto 12px;overflow:hidden;background:var(--linkB)}
 .profileView .avatar img{width:100%;height:100%;object-fit:cover}
@@ -192,20 +187,97 @@
 .profileView .btnBack{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid var(--contentL);border-radius:8px;font-size:.75rem;color:var(--bodyC);background:transparent;cursor:pointer;margin-top:12px;transition:all .2s}
 .profileView .btnBack:hover{background:var(--transB)}
 
-.chatContainer{display:flex;flex-direction:column;height:100%;min-height:300px}
-.chatMessages{flex:1;overflow-y:auto;padding:4px 0;display:flex;flex-direction:column;gap:6px;max-height:320px}
-.chatMsg{max-width:85%;padding:8px 12px;border-radius:12px;font-size:.8rem;line-height:1.4;word-break:break-word}
-.chatMsg.me{background:var(--linkB);color:#fff;align-self:flex-end;border-end-end-radius:4px}
-.chatMsg.other{background:var(--bodyB);color:var(--bodyC);border:1px solid var(--contentL);align-self:flex-start;border-end-start-radius:4px}
-.chatMsg .meta{display:flex;justify-content:space-between;gap:12px;font-size:.6rem;opacity:.7;margin-top:4px}
-.chatMsg .meta .name{font-weight:500}
-.chatInputRow{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--contentL)}
-.chatInputRow input{flex:1;padding:8px 12px;border:1px solid var(--contentL);border-radius:8px;font-size:.8rem;background:var(--contentB);color:var(--bodyC);outline:none;transition:border-color .2s}
-.chatInputRow input:focus{border-color:var(--linkC)}
-.chatInputRow button{padding:8px 16px;border:0;border-radius:8px;background:var(--linkB);color:#fff;font-size:.8rem;cursor:pointer;transition:opacity .2s}
-.chatInputRow button:hover{opacity:.85}
-.chatEmpty{text-align:center;padding:30px 0;color:var(--bodyCa);font-size:.8rem}
+/* مركز الإحصائيات والاتصال */
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bodyB);
+  border: 1px solid var(--contentL);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.statIcon { font-size: 1.5rem; }
+.statInfo { flex: 1; }
+.statValue { font-size: 1rem; font-weight: 600; color: var(--headC); }
+.statLabel { font-size: .65rem; color: var(--bodyCa); }
 
+.chartContainer {
+  background: var(--bodyB);
+  border: 1px solid var(--contentL);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.chartTitle {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--headC);
+  margin-bottom: 10px;
+  text-align: center;
+}
+.chartBars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 80px;
+  padding: 0 4px;
+}
+.chartBarItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.chartBar {
+  width: 24px;
+  background: var(--linkB);
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: height 0.3s;
+}
+.chartLabel {
+  font-size: .55rem;
+  color: var(--bodyCa);
+  text-align: center;
+}
+
+.contactForm {
+  background: var(--bodyB);
+  border: 1px solid var(--contentL);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.contactInput {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--contentL);
+  border-radius: 6px;
+  font-size: .75rem;
+  background: var(--contentB);
+  color: var(--bodyC);
+  margin: 8px 0;
+  resize: vertical;
+  box-sizing: border-box;
+  outline: none;
+}
+.contactInput:focus { border-color: var(--linkC); }
+.contactBtn {
+  width: 100%;
+  padding: 8px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--linkB);
+  color: #fff;
+  font-size: .8rem;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+.contactBtn:hover { opacity: .85; }
+
+/* لوحة الإدارة */
 .adminStats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .adminStats .stat{background:var(--bodyB);border:1px solid var(--contentL);border-radius:8px;padding:8px 10px;text-align:center}
 .adminStats .stat .num{font-size:1.1rem;font-weight:700;color:var(--headC)}

@@ -10,6 +10,10 @@ const STORAGE_KEYS = {
   COMMUNITY_MEMBERS: 'communityMembers',
   COMMUNITY_MESSAGES: 'communityMessages',
   VIEW_PROFILE_EMAIL: 'viewProfileEmail',
+  LOGIN_COUNT: 'loginCount',
+  LOGIN_HISTORY: 'loginHistory',
+  SESSION_START: 'sessionStart',
+  LAST_VISITED_ARTICLE: 'lastVisitedArticle',
 } as const;
 
 function safeGet<T>(key: string, fallback: T): T {
@@ -90,6 +94,48 @@ export const storageService = {
   setViewProfileEmail(email: string): void {
     safeSet(STORAGE_KEYS.VIEW_PROFILE_EMAIL, email);
   },
+
+  // ---- الإحصائيات ----
+  getLoginCount(): number {
+    return parseInt(localStorage.getItem(STORAGE_KEYS.LOGIN_COUNT) || '0', 10);
+  },
+  incrementLoginCount(): void {
+    const count = this.getLoginCount() + 1;
+    localStorage.setItem(STORAGE_KEYS.LOGIN_COUNT, count.toString());
+    this.addLoginToHistory();
+  },
+  getLoginHistory(): Record<string, number> {
+    return safeGet<Record<string, number>>(STORAGE_KEYS.LOGIN_HISTORY, {});
+  },
+  addLoginToHistory(): void {
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const history = this.getLoginHistory();
+    history[today] = (history[today] || 0) + 1;
+    // نحتفظ بآخر 7 أيام فقط
+    const keys = Object.keys(history).sort().slice(-7);
+    const trimmed: Record<string, number> = {};
+    keys.forEach(k => trimmed[k] = history[k]);
+    safeSet(STORAGE_KEYS.LOGIN_HISTORY, trimmed);
+  },
+  getSessionStartTime(): string | null {
+    return localStorage.getItem(STORAGE_KEYS.SESSION_START);
+  },
+  setSessionStartTime(): void {
+    localStorage.setItem(STORAGE_KEYS.SESSION_START, new Date().toISOString());
+  },
+  getLastVisitedArticle(): { title: string; url: string } | null {
+    const raw = localStorage.getItem(STORAGE_KEYS.LAST_VISITED_ARTICLE);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  },
+  setLastVisitedArticle(title: string, url: string): void {
+    safeSet(STORAGE_KEYS.LAST_VISITED_ARTICLE, { title, url });
+  },
+
   clearAll(): void {
     localStorage.clear();
   },

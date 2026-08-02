@@ -4,38 +4,33 @@ import { LoginPage } from '@/components/account/LoginPage';
 import { DashboardPage } from '@/components/account/DashboardPage';
 import { MembersPage } from '@/components/community/MembersPage';
 import { ProfilePage } from '@/components/community/ProfilePage';
-import { ChatPage } from '@/components/chat/ChatPage';
+import { StatsPage } from '@/components/stats/StatsPage';
 import { AdminPage } from '@/components/admin/AdminPage';
 
 const sheetTitles: Record<string, string> = {
   dashboard: 'إدارة الحساب',
   members: 'أعضاء المجتمع',
   profile: 'الملف الشخصي',
-  chat: ' مجتمع مود ويب',
+  stats: 'مركز الإحصائيات',
   admin: ' لوحة التحكم',
 };
 
 export function App() {
-  // منع التمرير خلف النافذة عند فتحها
   createEffect(() => {
     const html = document.documentElement;
     const body = document.body;
     if (authStore.isSheetOpen()) {
       html.style.overflow = 'hidden';
       body.style.overflow = 'hidden';
-      // إضافة padding لتعويض شريط التمرير المختفي (اختياري)
-      body.style.paddingRight = 'var(--scrollbar-width, 0px)';
     } else {
       html.style.overflow = '';
       body.style.overflow = '';
-      body.style.paddingRight = '';
     }
   });
 
   onCleanup(() => {
     document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
-    document.body.style.paddingRight = '';
   });
 
   const handleClose = () => authStore.closeSheet();
@@ -70,8 +65,8 @@ export function App() {
             <Match when={authStore.sheetView() === 'profile'}>
               <ProfilePage />
             </Match>
-            <Match when={authStore.sheetView() === 'chat'}>
-              <ChatPage />
+            <Match when={authStore.sheetView() === 'stats'}>
+              <StatsPage />
             </Match>
             <Match when={authStore.sheetView() === 'admin'}>
               <AdminPage />

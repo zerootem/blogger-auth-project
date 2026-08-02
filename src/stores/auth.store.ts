@@ -21,13 +21,14 @@ const userInitial = createMemo(() => {
 function login(name: string, email: string, picture: string) {
   const now = new Date().toISOString();
   storageService.setUserData({ name, email, picture, joinDate: now });
+  storageService.incrementLoginCount();
+  storageService.setSessionStartTime();
   setIsLoggedIn(true);
   setUserName(name);
   setUserEmail(email);
   setUserPicture(picture);
   setJoinDate(now);
 
-  // تحديث واجهة القالب فورًا
   if (typeof (window as any).updateAccountUI === 'function') {
     (window as any).updateAccountUI();
   }
@@ -44,7 +45,6 @@ function logout() {
   setSheetView('dashboard');
   setIsSheetOpen(false);
 
-  // تحديث واجهة القالب فورًا
   if (typeof (window as any).updateAccountUI === 'function') {
     (window as any).updateAccountUI();
   }
@@ -55,7 +55,6 @@ function updateProfile(name: string, picture: string) {
   setUserName(name);
   setUserPicture(picture);
 
-  // تحديث الأيقونة فقط عند تغيير الصورة أو الاسم
   if (typeof (window as any).updateAccountUI === 'function') {
     (window as any).updateAccountUI();
   }

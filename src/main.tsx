@@ -10,7 +10,7 @@ import '@/styles/auth.css';
 (window as any).openAccountSheet = () => authStore.openSheet('dashboard');
 (window as any).closeAccountSheet = () => authStore.closeSheet();
 (window as any).openCommunityMembers = () => authStore.openSheet('members');
-(window as any).openCommunityChat = () => authStore.openSheet('chat');
+(window as any).openStatsPage = () => authStore.openSheet('stats');
 (window as any).openAdminPanel = () => authStore.openSheet('admin');
 (window as any).handleLogout = () => {
   authStore.logout();
@@ -35,7 +35,6 @@ function initApp() {
     communityService.addCurrentUserToCommunity();
   }
 
-  // تحديث القائمة المنسدلة بعد التجهيز
   if (typeof (window as any).updateAccountUI === 'function') {
     (window as any).updateAccountUI();
   }
