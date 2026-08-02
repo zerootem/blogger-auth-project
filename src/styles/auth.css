@@ -204,6 +204,7 @@
   padding: 10px 12px;
   min-height: 56px;
   box-sizing: border-box;
+  overflow: hidden; /* يمنع تجاوز المحتوى */
 }
 .statIcon {
   display: flex;
@@ -215,17 +216,23 @@
 .statInfo {
   flex: 1;
   min-width: 0;
+  overflow: hidden; /* إضافي لضمان القطع */
 }
 .statValue {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--headC);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .statLabel {
   font-size: 0.6rem;
   color: var(--bodyCa);
   margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .statLink {
   font-size: 0.7rem;
@@ -236,6 +243,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
+  max-width: 100%;
 }
 .statLink:hover {
   text-decoration: underline;
