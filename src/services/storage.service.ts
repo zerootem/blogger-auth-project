@@ -59,15 +59,18 @@ export const storageService = {
   getSessions(): UserSession[] {
     return safeGet<UserSession[]>(STORAGE_KEYS.USER_SESSIONS, []);
   },
+  saveSessions(sessions: UserSession[]): void {
+    safeSet(STORAGE_KEYS.USER_SESSIONS, sessions);
+  },
   addSession(session: UserSession): void {
     const sessions = this.getSessions();
     sessions.push(session);
-    safeSet(STORAGE_KEYS.USER_SESSIONS, sessions);
+    this.saveSessions(sessions);
   },
   removeSession(index: number): void {
     const sessions = this.getSessions();
     sessions.splice(index, 1);
-    safeSet(STORAGE_KEYS.USER_SESSIONS, sessions);
+    this.saveSessions(sessions);
   },
   getCommunityMembers(): CommunityMember[] {
     return safeGet<CommunityMember[]>(STORAGE_KEYS.COMMUNITY_MEMBERS, []);
