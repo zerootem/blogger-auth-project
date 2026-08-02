@@ -11,13 +11,13 @@ export default defineConfig({
   },
   build: {
     target: 'es2020',
-    cssCodeSplit: false, // لدمج كل الـ CSS في ملف واحد
+    cssCodeSplit: false,
     minify: 'terser',
     rollupOptions: {
       output: {
-        entryFileNames: 'assets/auth.js',
-        chunkFileNames: 'assets/auth-chunk.js',
-        assetFileNames: 'assets/auth.[ext]',
+        entryFileNames: 'assets/auth.[hash].js',
+        chunkFileNames: 'assets/auth-chunk.[hash].js',
+        assetFileNames: 'assets/auth.[hash][extname]',
       },
     },
   },
