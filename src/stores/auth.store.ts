@@ -11,7 +11,6 @@ const [joinDate, setJoinDate] = createSignal(storageService.getUserJoinDate());
 const [sessions, setSessions] = createSignal<UserSession[]>(storageService.getSessions());
 const [sheetView, setSheetView] = createSignal<SheetView>('dashboard');
 const [isSheetOpen, setIsSheetOpen] = createSignal(false);
-const [isDropdownOpen, setIsDropdownOpen] = createSignal(false);
 
 const isAdmin = createMemo(() => userEmail() === CONFIG.adminEmail);
 const userInitial = createMemo(() => {
@@ -27,6 +26,11 @@ function login(name: string, email: string, picture: string) {
   setUserEmail(email);
   setUserPicture(picture);
   setJoinDate(now);
+
+  // تحديث واجهة القالب فورًا
+  if (typeof (window as any).updateAccountUI === 'function') {
+    (window as any).updateAccountUI();
+  }
 }
 
 function logout() {
@@ -39,13 +43,22 @@ function logout() {
   setSessions([]);
   setSheetView('dashboard');
   setIsSheetOpen(false);
-  setIsDropdownOpen(false);
+
+  // تحديث واجهة القالب فورًا
+  if (typeof (window as any).updateAccountUI === 'function') {
+    (window as any).updateAccountUI();
+  }
 }
 
 function updateProfile(name: string, picture: string) {
   storageService.updateProfile(name, picture);
   setUserName(name);
   setUserPicture(picture);
+
+  // تحديث الأيقونة فقط عند تغيير الصورة أو الاسم
+  if (typeof (window as any).updateAccountUI === 'function') {
+    (window as any).updateAccountUI();
+  }
 }
 
 function refreshSessions() {
@@ -55,19 +68,10 @@ function refreshSessions() {
 function openSheet(view: SheetView = 'dashboard') {
   setSheetView(view);
   setIsSheetOpen(true);
-  setIsDropdownOpen(false);
 }
 
 function closeSheet() {
   setIsSheetOpen(false);
-}
-
-function toggleDropdown() {
-  setIsDropdownOpen(!isDropdownOpen());
-}
-
-function closeDropdown() {
-  setIsDropdownOpen(false);
 }
 
 export const authStore = {
@@ -79,7 +83,6 @@ export const authStore = {
   sessions,
   sheetView,
   isSheetOpen,
-  isDropdownOpen,
   isAdmin,
   userInitial,
   login,
@@ -88,7 +91,5 @@ export const authStore = {
   refreshSessions,
   openSheet,
   closeSheet,
-  toggleDropdown,
-  closeDropdown,
   setSheetView,
 };
