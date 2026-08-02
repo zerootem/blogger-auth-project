@@ -1,0 +1,188 @@
+import { createSignal, onMount } from 'solid-js';
+import { authStore } from '@/stores/auth.store';
+import { storageService } from '@/services/storage.service';
+import { toastService } from '@/services/toast.service';
+import type { UserSession } from '@/types';
+
+export function DashboardPage() {
+  const [showSettings, setShowSettings] = createSignal(false);
+  let editForm: HTMLFormElement | undefined;
+  let nameInput: HTMLInputElement | undefined;
+  let picFileInput: HTMLInputElement | undefined;
+  let picUrlInput: HTMLInputElement | undefined;
+
+  onMount(() => {
+    authStore.refreshSessions();
+  });
+
+  const sessions = () => {
+    const raw = authStore.sessions();
+    return raw.slice().sort((a, b) => b.id - a.id);
+  };
+
+  const handleRemoveSession = (index: number) => {
+    storageService.removeSession(index);
+    authStore.refreshSessions();
+    toastService.show('تم إزالة الجلسة');
+  };
+
+  const handleLogout = () => {
+    authStore.logout();
+    toastService.show('تم تسجيل الخروج بنجاح!');
+  };
+
+  const handleEditSubmit = (e: Event) => {
+    e.preventDefault();
+    const name = nameInput?.value.trim() || authStore.userName();
+    const file = picFileInput?.files?.[0];
+    const url = picUrlInput?.value.trim();
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const picture = ev.target?.result as string;
+        authStore.updateProfile(name, picture);
+        toastService.show('تم حفظ التعديلات!');
+      };
+      reader.readAsDataURL(file);
+    } else if (url) {
+      authStore.updateProfile(name, url);
+      toastService.show('تم حفظ التعديلات!');
+    } else {
+      authStore.updateProfile(name, authStore.userPicture());
+      toastService.show('تم حفظ التعديلات!');
+    }
+  };
+
+  const userOS = () => {
+    if (navigator.userAgent.includes('Win')) return 'Windows';
+    if (navigator.userAgent.includes('Mac')) return 'Mac';
+    if (navigator.userAgent.includes('Linux')) return 'Linux';
+    return 'Android/iOS';
+  };
+
+  return (
+    <div>
+      <p style="font-size:0.9rem;font-weight:500;margin-bottom:10px;color:var(--headC)">
+        عرض حسابك وإدارته.
+      </p>
+      <div class="acctCard">
+        <div class="acctUser">
+          <div class="acctAvatar" style="border-radius:8px;">
+            <img
+              src={
+                authStore.userPicture() ||
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(authStore.userName())}&background=0D8ABC&color=fff`
+              }
+              alt={authStore.userName()}
+            />
+          </div>
+          <div class="acctInfo">
+            <div class="acctName">{authStore.userName()}</div>
+            <div class="acctEmail" style="display:flex;align-items:center;gap:4px;">
+              <span>{authStore.userEmail()}</span>
+              <svg class="line" viewBox="0 0 24 24" width="14" height="14">
+                <path d="M8.38 12L10.79 14.42L15.62 9.57996" />
+                <path d="M10.75 2.44995C11.44 1.85995 12.57 1.85995 13.27 2.44995L14.85 3.80995C15.15 4.06995 15.71 4.27995 16.11 4.27995H17.81C18.87 4.27995 19.74 5.14995 19.74 6.20995V7.90995C19.74 8.29995 19.95 8.86995 20.21 9.16995L21.57 10.7499C22.16 11.4399 22.16 12.5699 21.57 13.2699L20.21 14.8499C19.95 15.1499 19.74 15.7099 19.74 16.1099V17.8099C19.74 18.8699 18.87 19.7399 17.81 19.7399H16.11C15.72 19.7399 15.15 19.9499 14.85 20.2099L13.27 21.5699C12.58 22.1599 11.45 22.1599 10.75 21.5699L9.17 20.2099C8.87 19.9499 8.31 19.7399 7.91 19.7399H6.18C5.12 19.7399 4.25 18.8699 4.25 17.8099V16.0999C4.25 15.7099 4.04 15.1499 3.79 14.8499L2.44 13.2599C1.86 12.5699 1.86 11.4499 2.44 10.7599L3.79 9.16995C4.04 8.86995 4.25 8.30995 4.25 7.91995V6.19995C4.25 5.13995 5.12 4.26995 6.18 4.26995H7.91C8.3 4.26995 8.87 4.05995 9.17 3.79995L10.75 2.44995Z" />
+              </svg>
+            </div>
+            <div class="acctMeta">
+              انضم:{' '}
+              {authStore.joinDate()
+                ? new Date(authStore.joinDate()).toLocaleDateString('ar-EG', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                  })
+                : 'غير محدد'}
+            </div>
+          </div>
+          <button
+            class="settingsTrigger"
+            onClick={() => setShowSettings(!showSettings())}
+            title="الإعدادات"
+          >
+            <svg class="line" viewBox="0 0 24 24" width="18" height="18">
+              <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" />
+              <path d="M2 12.8799V11.1199C2 10.0799 2.85 9.21994 3.9 9.21994C5.71 9.21994 6.45 7.93994 5.54 6.36994C5.02 5.46994 5.33 4.29994 6.24 3.77994L7.97 2.78994C8.76 2.31994 9.78 2.59994 10.25 3.38994L10.36 3.57994C11.26 5.14994 12.74 5.14994 13.65 3.57994L13.76 3.38994C14.23 2.59994 15.25 2.31994 16.04 2.78994L17.77 3.77994C18.68 4.29994 18.99 5.46994 18.47 6.36994C17.56 7.93994 18.3 9.21994 20.11 9.21994C21.15 9.21994 22.01 10.0699 22.01 11.1199V12.8799C22.01 13.9199 21.16 14.7799 20.11 14.7799C18.3 14.7799 17.56 16.0599 18.47 17.6299C18.99 18.5399 18.68 19.6999 17.77 20.2199L16.04 21.2099C15.25 21.6799 14.23 21.3999 13.76 20.6099L13.65 20.4199C12.75 18.8499 11.27 18.8499 10.36 20.4199L10.25 20.6099C9.78 21.3999 8.76 21.6799 7.97 21.2099L6.24 20.2199C5.33 19.6999 5.02 18.5299 5.54 17.6299C6.45 16.0599 5.71 14.7799 3.9 14.7799C2.85 14.7799 2 13.9199 2 12.8799Z" />
+            </svg>
+          </button>
+        </div>
+        <div class="acctSessions">
+          <label>الجلسات النشطة</label>
+          {sessions().length === 0 ? (
+            <div style="font-size:.65rem;color:var(--bodyCa)">لا توجد جلسات</div>
+          ) : (
+            sessions().map((session, index) => (
+              <div class="sessionItem">
+                <div class="info">
+                  <div style="display:flex;align-items:center;gap:3px;">
+                    <svg class="line" viewBox="0 0 24 24" width="10" height="10">
+                      <path d="M20.75 13.25C20.75 18.08 16.83 22 12 22C7.17 22 3.25 18.08 3.25 13.25C3.25 8.42 7.17 4.5 12 4.5C16.83 4.5 20.75 8.42 20.75 13.25Z" />
+                      <path d="M12 8V13" />
+                      <path d="M9 2H15" stroke-miterlimit="10" />
+                    </svg>
+                    <b>الوقت:</b> <span dir="ltr">{session.time}</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:3px;">
+                    <b>النظام:</b> {session.os}
+                  </div>
+                  <div style="display:flex;align-items:center;gap:3px;">
+                    {session.isCurrent ? (
+                      <b>الجلسة الحالية.</b>
+                    ) : (
+                      <span style="opacity:.7">جلسة سابقة</span>
+                    )}
+                  </div>
+                </div>
+                <div class="actions">
+                  {session.isCurrent ? (
+                    <button class="btnLogout" onClick={handleLogout}>
+                      <svg class="line" viewBox="0 0 24 24" style="width:20px;height:20px;flex-shrink:0;">
+                        <path d="M17.4399 14.62L19.9999 12.06L17.4399 9.5" />
+                        <path d="M9.76001 12.0601H19.93" />
+                        <path d="M11.76 20C7.34001 20 3.76001 17 3.76001 12C3.76001 7 7.34001 4 11.76 4" />
+                      </svg>
+                    </button>
+                  ) : (
+                    <button class="btnRemove" onClick={() => handleRemoveSession(index)}>
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        <div class="editPanel" id="editPanel" style={{ display: showSettings() ? 'block' : 'none' }}>
+          <form ref={editForm} onSubmit={handleEditSubmit}>
+            <label>
+              الاسم:
+              <input
+                type="text"
+                ref={nameInput}
+                class="input"
+                value={authStore.userName()}
+                maxlength="32"
+                required
+              />
+            </label>
+            <div class="border-t my-2" />
+            <div class="text-sm">تغيير الصورة:</div>
+            <label class="block mb-1">
+              (رفع صورة من جهازك)
+              <input type="file" ref={picFileInput} accept="image/*" class="input" />
+            </label>
+            <label class="block">
+              (أو رابط مباشر للصورة)
+              <input type="url" ref={picUrlInput} class="input" placeholder="https://example.com/avatar.jpg" />
+            </label>
+            <button type="submit" class="button primary w-full mt-2">
+              حفظ التعديلات
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
