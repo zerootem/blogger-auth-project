@@ -113,7 +113,7 @@
 
 [dir="rtl"] .lgnSheet { transform-origin: center; }
 
-/* بطاقة الحساب والجلسات (كما هي) */
+/* بطاقة الحساب والجلسات */
 .acctCard{background:var(--contentB);border-radius:12px;border:1px solid var(--contentL);padding:12px 14px;margin-bottom:8px}
 .acctUser{display:flex;align-items:center;gap:12px;margin-bottom:10px;position:relative}
 .acctAvatar{width:56px;height:56px;border-radius:8px;border:2px solid var(--contentL);flex-shrink:0;overflow:hidden;background:var(--linkB)}
@@ -133,7 +133,7 @@
 .btnLogout{background:var(--linkB);color:#fff}
 .btnRemove{background:#ef4444;color:#fff}
 
-/* صفحة تسجيل الدخول (guestCard) */
+/* صفحة تسجيل الدخول */
 .guestCard{max-width:320px;margin:0 auto;padding:8px 0}
 .guestCard .gTitle{font-size:1.1rem;font-weight:700;color:var(--headC);text-align:center;margin:0 0 2px}
 .guestCard .gSub{font-size:.8rem;color:var(--bodyCa);text-align:center;margin:0 0 16px}
@@ -187,21 +187,59 @@
 .profileView .btnBack{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid var(--contentL);border-radius:8px;font-size:.75rem;color:var(--bodyC);background:transparent;cursor:pointer;margin-top:12px;transition:all .2s}
 .profileView .btnBack:hover{background:var(--transB)}
 
-/* مركز الإحصائيات والاتصال */
+/* ===== مركز الإحصائيات (نمط Grid) ===== */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
 .statCard {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   background: var(--bodyB);
   border: 1px solid var(--contentL);
   border-radius: 8px;
   padding: 10px 12px;
-  margin-bottom: 8px;
+  min-height: 56px;
+  box-sizing: border-box;
 }
-.statIcon { font-size: 1.5rem; }
-.statInfo { flex: 1; }
-.statValue { font-size: 1rem; font-weight: 600; color: var(--headC); }
-.statLabel { font-size: .65rem; color: var(--bodyCa); }
+.statIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--linkB);
+  flex-shrink: 0;
+}
+.statInfo {
+  flex: 1;
+  min-width: 0;
+}
+.statValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--headC);
+  white-space: nowrap;
+}
+.statLabel {
+  font-size: 0.6rem;
+  color: var(--bodyCa);
+  margin-top: 2px;
+}
+.statLink {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--linkC);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+.statLink:hover {
+  text-decoration: underline;
+}
 
 .chartContainer {
   background: var(--bodyB);
@@ -211,7 +249,7 @@
   margin-bottom: 12px;
 }
 .chartTitle {
-  font-size: .75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--headC);
   margin-bottom: 10px;
@@ -221,7 +259,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
-  height: 80px;
+  height: 70px;
   padding: 0 4px;
 }
 .chartBarItem {
@@ -231,14 +269,14 @@
   gap: 4px;
 }
 .chartBar {
-  width: 24px;
+  width: 20px;
   background: var(--linkB);
   border-radius: 4px 4px 0 0;
   min-height: 4px;
   transition: height 0.3s;
 }
 .chartLabel {
-  font-size: .55rem;
+  font-size: 0.55rem;
   color: var(--bodyCa);
   text-align: center;
 }
@@ -255,7 +293,7 @@
   padding: 8px;
   border: 1px solid var(--contentL);
   border-radius: 6px;
-  font-size: .75rem;
+  font-size: 0.7rem;
   background: var(--contentB);
   color: var(--bodyC);
   margin: 8px 0;
@@ -263,7 +301,9 @@
   box-sizing: border-box;
   outline: none;
 }
-.contactInput:focus { border-color: var(--linkC); }
+.contactInput:focus {
+  border-color: var(--linkC);
+}
 .contactBtn {
   width: 100%;
   padding: 8px;
@@ -271,11 +311,14 @@
   border-radius: 6px;
   background: var(--linkB);
   color: #fff;
-  font-size: .8rem;
+  font-size: 0.75rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: opacity .2s;
+  transition: opacity 0.2s;
 }
-.contactBtn:hover { opacity: .85; }
+.contactBtn:hover {
+  opacity: 0.85;
+}
 
 /* لوحة الإدارة */
 .adminStats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
