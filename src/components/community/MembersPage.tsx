@@ -7,14 +7,15 @@ export function MembersPage() {
   const [membersList, setMembersList] = createSignal<CommunityMember[]>([]);
 
   onMount(() => {
-    // ضمان وجود المستخدم في القائمة ثم تحديثها
+    // إضافة المستخدم الحالي إذا لم يكن موجوداً
     communityService.addCurrentUserToCommunity();
+    // تحديث القائمة مباشرة
     setMembersList(communityService.getMembers());
   });
 
   const handleViewProfile = (email: string) => {
-    authStore.setSheetView('profile');
     localStorage.setItem('viewProfileEmail', email);
+    authStore.setSheetView('profile');
     authStore.openSheet('profile');
   };
 

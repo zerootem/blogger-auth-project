@@ -1,9 +1,16 @@
+import { createSignal, onMount } from 'solid-js';
 import { communityService } from '@/services/community.service';
 import { authStore } from '@/stores/auth.store';
+import type { CommunityMember } from '@/types';
 
 export function ProfilePage() {
-  const email = localStorage.getItem('viewProfileEmail') || '';
-  const member = () => communityService.getMemberByEmail(email);
+  const [member, setMember] = createSignal<CommunityMember | null | undefined>(undefined);
+
+  onMount(() => {
+    const email = localStorage.getItem('viewProfileEmail') || '';
+    const found = communityService.getMemberByEmail(email);
+    setMember(found);
+  });
 
   const goBackToMembers = () => {
     authStore.setSheetView('members');
@@ -12,8 +19,16 @@ export function ProfilePage() {
 
   return (
     <div>
-      {!member() ? (
-        <div style="text-align:center;padding:30px 0;color:var(--bodyCa)"> العضو غير موجود</div>
+      {member() === undefined ? (
+        <div style="text-align:center;padding:20px 0;color:var(--bodyCa)">جاري التحميل...</div>
+      ) : member() === null ? (
+        <div style="text-align:center;padding:30px 0;color:var(--bodyCa)">
+          العضو غير موجود
+          <br />
+          <button class="btnBack" onClick={goBackToMembers} style="margin-top:12px">
+            ↩ الرجوع للأعضاء
+          </button>
+        </div>
       ) : (
         <div class="profileView">
           <div class="avatar">
@@ -26,7 +41,7 @@ export function ProfilePage() {
             />
           </div>
           <div class="name">{member()!.name}</div>
-          <div class="email"> {member()!.email}</div>
+          <div class="email">{member()!.email}</div>
           <div class="joinDate">
             انضم:{' '}
             {member()!.joinDate
