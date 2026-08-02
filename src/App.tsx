@@ -16,18 +16,26 @@ const sheetTitles: Record<string, string> = {
 };
 
 export function App() {
-  // إضافة/إزالة overflow:hidden من body عند فتح/إغلاق النافذة
+  // منع التمرير خلف النافذة عند فتحها
   createEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
     if (authStore.isSheetOpen()) {
-      document.body.style.overflow = 'hidden';
+      html.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+      // إضافة padding لتعويض شريط التمرير المختفي (اختياري)
+      body.style.paddingRight = 'var(--scrollbar-width, 0px)';
     } else {
-      document.body.style.overflow = '';
+      html.style.overflow = '';
+      body.style.overflow = '';
+      body.style.paddingRight = '';
     }
   });
 
-  // إزالة التأثير عند تدمير المكون
   onCleanup(() => {
+    document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
   });
 
   const handleClose = () => authStore.closeSheet();
