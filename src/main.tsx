@@ -4,7 +4,6 @@ import { authStore } from '@/stores/auth.store';
 import { googleAuthService } from '@/services/google-auth.service';
 import { toastService } from '@/services/toast.service';
 import { communityService } from '@/services/community.service';
-import '@/styles/auth.css';
 
 // تعريض دوال للقالب ليتمكن من استدعائها
 function exposeGlobalFunctions() {
