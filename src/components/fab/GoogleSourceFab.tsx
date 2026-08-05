@@ -38,12 +38,10 @@ export function GoogleSourceFab() {
   };
 
   onMount(() => {
-    // إذا كان النطاق غير مسموح، لا نضيف الودجت
     if (!checkDomain()) {
       console.log('[مود ويب] هذا النطاق غير مسموح له بتشغيل الودجت');
       return;
     }
-
     closeTimer = setTimeout(handleClose, 5000);
     document.addEventListener('click', handleOutsideClick);
   });
@@ -53,7 +51,6 @@ export function GoogleSourceFab() {
     document.removeEventListener('click', handleOutsideClick);
   });
 
-  // لا نعرض شيئاً إذا كان النطاق غير مسموح
   if (!checkDomain()) {
     return null;
   }
@@ -76,7 +73,6 @@ export function GoogleSourceFab() {
             class="modtasvgai"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
-            xml:space="preserve"
           >
             <g fill="currentColor">
               <path d="M314.262,288.662c-12.359,82.097-74.152,126.234-153.6,126.234C71.503,414.897,0,345.159,0,256 S71.503,97.103,160.662,97.103c43.255,0,81.214,12.359,108.579,38.841l-46.786,46.786c-15.007-15.89-37.076-23.834-61.793-23.834 c-52.966,0-98.869,44.138-98.869,97.103s45.903,97.103,98.869,97.103c44.138,0,77.683-28.248,87.393-70.621h-89.159V220.69h155.366 c1.766,10.593,2.648,23.834,2.648,35.31C316.91,267.476,316.028,278.069,314.262,288.662" />
