@@ -1,12 +1,5 @@
 import { createSignal, onCleanup, onMount } from 'solid-js';
 
-const ALLOWED_DOMAINS = ['www.modweeb.com', 'mdwnplus.blogspot.com'];
-
-function checkDomain(): boolean {
-  const hostname = window.location.hostname;
-  return ALLOWED_DOMAINS.some(domain => hostname === domain || hostname.endsWith('.' + domain));
-}
-
 export function GoogleSourceFab() {
   const [isOpen, setIsOpen] = createSignal(true);
   const [hasClosed, setHasClosed] = createSignal(false);
@@ -38,10 +31,6 @@ export function GoogleSourceFab() {
   };
 
   onMount(() => {
-    if (!checkDomain()) {
-      console.log('[مود ويب] هذا النطاق غير مسموح له بتشغيل الودجت');
-      return;
-    }
     closeTimer = setTimeout(handleClose, 5000);
     document.addEventListener('click', handleOutsideClick);
   });
@@ -50,10 +39,6 @@ export function GoogleSourceFab() {
     clearTimeout(closeTimer);
     document.removeEventListener('click', handleOutsideClick);
   });
-
-  if (!checkDomain()) {
-    return null;
-  }
 
   return (
     <div
