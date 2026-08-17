@@ -9,10 +9,18 @@
   border-radius: 12px;
   padding: 12px 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-  min-width: 300px;
-  max-width: 360px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   direction: rtl;
   font-family: inherit;
+}
+
+/* ضبط عرض التنبيهات داخل vue-sonner ليكون متناسقاً */
+[data-sonner-toast] {
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
 }
 
 .pwa-toast-message {
@@ -41,10 +49,10 @@
 
 .pwa-toast-refresh,
 .pwa-toast-close {
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: 4px 10px;
+  border-radius: 6px;
   border: none;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s, transform 0.1s;
