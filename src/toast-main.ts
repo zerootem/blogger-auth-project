@@ -45,7 +45,6 @@ if (!container) {
   document.body.appendChild(container);
 }
 
-// تطبيق Vue مع Toaster في الموضع المطلوب
 const app = createApp({
   render() {
     return h(Toaster, {
@@ -89,7 +88,34 @@ function showActionToast(message: string, actionLabel: string, actionOnClick: ()
   });
 }
 
-// تعريض الدوال للاستخدام من أي مكان
+// تعريض الدوال
 (window as any).toast = toast;
 (window as any).showUpdateToast = showUpdateToast;
 (window as any).showActionToast = showActionToast;
+
+// ===== منطق الخمول التلقائي =====
+let lastActivity = Date.now();
+let idleToastShown = false;
+const IDLE_DELAY = 20000; // 20 ثانية
+
+function resetActivity() {
+  lastActivity = Date.now();
+  // إذا عاد النشاط وكان التنبيه معروضًا، نغلقه
+  if (idleToastShown) {
+    toast.dismiss();
+    idleToastShown = false;
+  }
+}
+
+// أحداث النشاط
+['pointerdown', 'keydown', 'scroll', 'touchstart', 'mousemove'].forEach(evt => {
+  window.addEventListener(evt, resetActivity, { passive: true });
+});
+
+// فحص الخمول كل ثانية
+setInterval(() => {
+  if (!idleToastShown && Date.now() - lastActivity >= IDLE_DELAY) {
+    idleToastShown = true;
+    showUpdateToast();
+  }
+}, 1000);
