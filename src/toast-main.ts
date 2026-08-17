@@ -3,7 +3,7 @@ import { Toaster, toast } from 'vue-sonner';
 import 'vue-sonner/style.css';
 import '@/styles/toast-custom.css';
 
-// مكون Vue مخصص للتنبيه
+// مكون Vue مخصص للتنبيه بزرين (تحديث/إغلاق)
 const CustomToast = defineComponent({
   props: {
     title: { type: String, default: 'تنبيه' },
@@ -45,10 +45,11 @@ if (!container) {
   document.body.appendChild(container);
 }
 
+// تطبيق Vue مع Toaster في الموضع المطلوب
 const app = createApp({
   render() {
     return h(Toaster, {
-      position: 'top-center',
+      position: 'bottom-left',
       richColors: true,
       closeButton: false,
       expand: true,
@@ -73,10 +74,22 @@ function showUpdateToast() {
     },
   }), {
     duration: Infinity,
-    position: 'top-center',
+    position: 'bottom-left',
   });
 }
 
-// تعريض التوابع العامة
+// دالة عامة تستخدم action
+function showActionToast(message: string, actionLabel: string, actionOnClick: () => void) {
+  toast(message, {
+    action: {
+      label: actionLabel,
+      onClick: actionOnClick,
+    },
+    position: 'bottom-left',
+  });
+}
+
+// تعريض الدوال للاستخدام من أي مكان
 (window as any).toast = toast;
 (window as any).showUpdateToast = showUpdateToast;
+(window as any).showActionToast = showActionToast;
