@@ -1,9 +1,13 @@
 import { defineConfig } from 'vite';
 import solid from 'vite-plugin-solid';
+import vue from '@vitejs/plugin-vue';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [solid()],
+  plugins: [
+    vue(),
+    solid(),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),
@@ -11,22 +15,18 @@ export default defineConfig({
   },
   build: {
     target: 'es2020',
-    cssCodeSplit: true, // للسماح بفصل CSS لكل مدخل
+    cssCodeSplit: true,
     minify: 'terser',
     rollupOptions: {
       input: {
         auth: path.resolve(import.meta.dirname, 'src/main.tsx'),
         fab: path.resolve(import.meta.dirname, 'src/fab-main.tsx'),
+        toast: path.resolve(import.meta.dirname, 'src/toast-main.ts'),
       },
       output: {
         entryFileNames: 'assets/[name].[hash].js',
         chunkFileNames: 'assets/[name]-chunk.[hash].js',
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name?.endsWith('.css')) {
-            return 'assets/[name].[hash][extname]';
-          }
-          return 'assets/[name].[hash][extname]';
-        },
+        assetFileNames: 'assets/[name].[hash][extname]',
       },
     },
   },

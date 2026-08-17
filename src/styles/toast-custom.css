@@ -1,0 +1,72 @@
+/* تنسيقات التنبيه المخصص */
+.pwa-toast-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--contentB, #fff);
+  border: 1px solid var(--contentL, #e5e7eb);
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  min-width: 300px;
+  max-width: 360px;
+  direction: rtl;
+  font-family: inherit;
+}
+
+.pwa-toast-message {
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-toast-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--headC, #111827);
+  margin-bottom: 4px;
+}
+
+.pwa-toast-desc {
+  font-size: 0.75rem;
+  color: var(--bodyCa, #6b7280);
+  line-height: 1.4;
+}
+
+.pwa-toast-buttons {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.pwa-toast-refresh,
+.pwa-toast-close {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.pwa-toast-refresh {
+  background: var(--linkC, #2563eb);
+  color: #fff;
+}
+
+.pwa-toast-close {
+  background: var(--bodyB, #f3f4f6);
+  color: var(--bodyC, #374151);
+  border: 1px solid var(--contentL, #e5e7eb);
+}
+
+.pwa-toast-refresh:hover,
+.pwa-toast-close:hover {
+  opacity: 0.85;
+}
+
+.pwa-toast-refresh:active,
+.pwa-toast-close:active {
+  transform: scale(0.96);
+}
