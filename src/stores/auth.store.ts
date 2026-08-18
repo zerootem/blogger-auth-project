@@ -8,6 +8,7 @@ const [userName, setUserName] = createSignal(storageService.getUserName());
 const [userEmail, setUserEmail] = createSignal(storageService.getUserEmail());
 const [userPicture, setUserPicture] = createSignal(storageService.getUserPicture());
 const [joinDate, setJoinDate] = createSignal(storageService.getUserJoinDate());
+const [userBio, setUserBio] = createSignal(storageService.getUserBio());
 const [sessions, setSessions] = createSignal<UserSession[]>(storageService.getSessions());
 const [sheetView, setSheetView] = createSignal<SheetView>('dashboard');
 const [isSheetOpen, setIsSheetOpen] = createSignal(false);
@@ -18,15 +19,16 @@ const userInitial = createMemo(() => {
   return name ? name[0].toUpperCase() : '';
 });
 
-function login(name: string, email: string, picture: string) {
+function login(name: string, email: string, picture: string, bio?: string) {
   const now = new Date().toISOString();
-  storageService.setUserData({ name, email, picture, joinDate: now });
+  storageService.setUserData({ name, email, picture, joinDate: now, bio: bio || '' });
   storageService.incrementLoginCount();
   storageService.setSessionStartTime();
   setIsLoggedIn(true);
   setUserName(name);
   setUserEmail(email);
   setUserPicture(picture);
+  setUserBio(bio || '');
   setJoinDate(now);
 
   if (typeof (window as any).updateAccountUI === 'function') {
@@ -40,6 +42,7 @@ function logout() {
   setUserName('');
   setUserEmail('');
   setUserPicture('');
+  setUserBio('');
   setJoinDate('');
   setSessions([]);
   setSheetView('dashboard');
@@ -50,10 +53,11 @@ function logout() {
   }
 }
 
-function updateProfile(name: string, picture: string) {
-  storageService.updateProfile(name, picture);
+function updateProfile(name: string, picture: string, bio: string) {
+  storageService.updateProfile(name, picture, bio);
   setUserName(name);
   setUserPicture(picture);
+  setUserBio(bio);
 
   if (typeof (window as any).updateAccountUI === 'function') {
     (window as any).updateAccountUI();
@@ -78,6 +82,7 @@ export const authStore = {
   userName,
   userEmail,
   userPicture,
+  userBio,
   joinDate,
   sessions,
   sheetView,

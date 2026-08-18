@@ -12,6 +12,7 @@ export interface UserProfile {
   picture: string;
   joinDate: string;
   isLoggedIn: boolean;
+  bio: string;
   sessions: UserSession[];
 }
 
@@ -22,6 +23,7 @@ export interface CommunityMember {
   joinDate: string;
   lastSeen: string;
   online: boolean;
+  bio: string;
 }
 
 export interface ChatMessage {
@@ -36,6 +38,7 @@ export type SheetView =
   | 'members'
   | 'profile'
   | 'stats'
+  | 'products'
   | 'admin';
 
 export type LoginMethod = 'google' | 'guest';

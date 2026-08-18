@@ -5,14 +5,14 @@ import { DashboardPage } from '@/components/account/DashboardPage';
 import { MembersPage } from '@/components/community/MembersPage';
 import { ProfilePage } from '@/components/community/ProfilePage';
 import { StatsPage } from '@/components/stats/StatsPage';
-import { AdminPage } from '@/components/admin/AdminPage';
+import { ProductsPage } from '@/components/stats/ProductsPage';
 
 const sheetTitles: Record<string, string> = {
   dashboard: 'إدارة الحساب',
   members: 'أعضاء المجتمع',
   profile: 'الملف الشخصي',
   stats: 'مركز الإحصائيات',
-  admin: ' لوحة التحكم',
+  products: 'المنتجات',
 };
 
 export function App() {
@@ -68,8 +68,8 @@ export function App() {
             <Match when={authStore.sheetView() === 'stats'}>
               <StatsPage />
             </Match>
-            <Match when={authStore.sheetView() === 'admin'}>
-              <AdminPage />
+            <Match when={authStore.sheetView() === 'products'}>
+              <ProductsPage />
             </Match>
           </Switch>
         </div>

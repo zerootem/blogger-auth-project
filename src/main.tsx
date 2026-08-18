@@ -4,7 +4,6 @@ import { authStore } from '@/stores/auth.store';
 import { googleAuthService } from '@/services/google-auth.service';
 import { toastService } from '@/services/toast.service';
 import { communityService } from '@/services/community.service';
-import { CONFIG } from '@/config';
 import '@/styles/auth.css';
 
 // تعريف الدوال العامة للقالب
@@ -12,33 +11,13 @@ import '@/styles/auth.css';
 (window as any).closeAccountSheet = () => authStore.closeSheet();
 (window as any).openCommunityMembers = () => authStore.openSheet('members');
 (window as any).openStatsPage = () => authStore.openSheet('stats');
-(window as any).openAdminPanel = () => authStore.openSheet('admin');
+(window as any).openProductsPage = () => authStore.openSheet('products');
 (window as any).handleLogout = () => {
   authStore.logout();
   toastService.show('تم تسجيل الخروج بنجاح!');
 };
 
-function checkDomain(): boolean {
-  const hostname = window.location.hostname;
-  const allowed = CONFIG.allowedDomains;
-  
-  // إذا كانت القائمة فارغة، نسمح للجميع (للتطوير)
-  if (!allowed || allowed.length === 0) {
-    console.log('[مود ويب] لم يتم تحديد نطاقات مسموحة - التطبيق يعمل للجميع');
-    return true;
-  }
-
-  const isAllowed = allowed.some(domain => hostname === domain || hostname.endsWith('.' + domain));
-  if (!isAllowed) {
-    console.error('[مود ويب] هذا النطاق غير مسموح له بتشغيل التطبيق:', hostname);
-    return false;
-  }
-  return true;
-}
-
 function initApp() {
-  if (!checkDomain()) return;
-
   const root = document.getElementById('modpro-auth-root');
   if (root) {
     render(() => <App />, root);
@@ -46,7 +25,7 @@ function initApp() {
 
   if (!authStore.isLoggedIn()) {
     googleAuthService.initOneTap((googleUser) => {
-      authStore.login(googleUser.name, googleUser.email, googleUser.picture);
+      authStore.login(googleUser.name, googleUser.email, googleUser.picture, googleUser.bio || '');
       communityService.addCurrentUserToCommunity();
       toastService.show(`أهلاً بك، ${googleUser.name}!`);
     });
@@ -68,7 +47,7 @@ if (document.readyState === 'loading') {
 }
 
 window.addEventListener('storage', (e) => {
-  if (e.key === 'userLoggedIn' || e.key === 'userName' || e.key === 'userPicture') {
+  if (e.key === 'userLoggedIn' || e.key === 'userName' || e.key === 'userPicture' || e.key === 'userBio') {
     window.location.reload();
   }
 });

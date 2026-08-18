@@ -7,9 +7,7 @@ export function MembersPage() {
   const [membersList, setMembersList] = createSignal<CommunityMember[]>([]);
 
   onMount(() => {
-    // إضافة المستخدم الحالي إذا لم يكن موجوداً
     communityService.addCurrentUserToCommunity();
-    // تحديث القائمة مباشرة
     setMembersList(communityService.getMembers());
   });
 
@@ -19,15 +17,18 @@ export function MembersPage() {
     authStore.openSheet('profile');
   };
 
+  const truncateBio = (bio: string, maxLength = 40) => {
+    if (!bio) return 'لا يوجد وصف';
+    return bio.length > maxLength ? bio.slice(0, maxLength) + '...' : bio;
+  };
+
   return (
     <div style="padding:4px 0">
       <div style="font-size:.7rem;color:var(--bodyCa);margin-bottom:8px;text-align:center">
         {membersList().length} عضو نشط
       </div>
       {membersList().length === 0 ? (
-        <div style="text-align:center;padding:20px 0;color:var(--bodyCa);font-size:.8rem">
-          لا يوجد أعضاء بعد
-        </div>
+        <div style="text-align:center;padding:20px 0;color:var(--bodyCa);font-size:.8rem">لا يوجد أعضاء بعد</div>
       ) : (
         membersList().map((member) => {
           const pic = member.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=0D8ABC&color=fff`;
@@ -40,16 +41,16 @@ export function MembersPage() {
               </div>
               <div class="info">
                 <div class="name">{member.name}</div>
-                <div class={`status ${statusClass}`}>{statusText}</div>
+                <div class={`status ${statusClass}`}>
+                  {statusText} • {truncateBio(member.bio)}
+                </div>
               </div>
             </div>
           );
         })
       )}
       <div style="margin-top:10px;text-align:center">
-        <button onClick={() => authStore.openSheet('dashboard')} class="gBtn gBtn-outline" style="display:inline-flex;width:auto;padding:6px 16px;font-size:.7rem">
-          ↩ الرجوع للوحة
-        </button>
+        <button onClick={() => authStore.openSheet('dashboard')} class="backBtn">↩ الرجوع للوحة</button>
       </div>
     </div>
   );

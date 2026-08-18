@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   USER_EMAIL: 'userEmail',
   USER_PICTURE: 'userPicture',
   USER_JOIN_DATE: 'userJoinDate',
+  USER_BIO: 'userBio',
   USER_SESSIONS: 'userSessions',
   COMMUNITY_MEMBERS: 'communityMembers',
   COMMUNITY_MESSAGES: 'communityMessages',
@@ -49,16 +50,21 @@ export const storageService = {
   getUserJoinDate(): string {
     return localStorage.getItem(STORAGE_KEYS.USER_JOIN_DATE) || '';
   },
-  setUserData(data: { name: string; email: string; picture: string; joinDate: string }): void {
+  getUserBio(): string {
+    return localStorage.getItem(STORAGE_KEYS.USER_BIO) || '';
+  },
+  setUserData(data: { name: string; email: string; picture: string; joinDate: string; bio?: string }): void {
     safeSet(STORAGE_KEYS.USER_LOGGED_IN, 'true');
     safeSet(STORAGE_KEYS.USER_NAME, data.name);
     safeSet(STORAGE_KEYS.USER_EMAIL, data.email);
     safeSet(STORAGE_KEYS.USER_PICTURE, data.picture);
     safeSet(STORAGE_KEYS.USER_JOIN_DATE, data.joinDate);
+    safeSet(STORAGE_KEYS.USER_BIO, data.bio || '');
   },
-  updateProfile(name: string, picture: string): void {
+  updateProfile(name: string, picture: string, bio: string): void {
     safeSet(STORAGE_KEYS.USER_NAME, name);
     safeSet(STORAGE_KEYS.USER_PICTURE, picture);
+    safeSet(STORAGE_KEYS.USER_BIO, bio);
   },
   getSessions(): UserSession[] {
     return safeGet<UserSession[]>(STORAGE_KEYS.USER_SESSIONS, []);
@@ -94,8 +100,6 @@ export const storageService = {
   setViewProfileEmail(email: string): void {
     safeSet(STORAGE_KEYS.VIEW_PROFILE_EMAIL, email);
   },
-
-  // ---- الإحصائيات ----
   getLoginCount(): number {
     return parseInt(localStorage.getItem(STORAGE_KEYS.LOGIN_COUNT) || '0', 10);
   },
@@ -108,10 +112,9 @@ export const storageService = {
     return safeGet<Record<string, number>>(STORAGE_KEYS.LOGIN_HISTORY, {});
   },
   addLoginToHistory(): void {
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const today = new Date().toISOString().slice(0, 10);
     const history = this.getLoginHistory();
     history[today] = (history[today] || 0) + 1;
-    // نحتفظ بآخر 7 أيام فقط
     const keys = Object.keys(history).sort().slice(-7);
     const trimmed: Record<string, number> = {};
     keys.forEach(k => trimmed[k] = history[k]);
@@ -135,7 +138,6 @@ export const storageService = {
   setLastVisitedArticle(title: string, url: string): void {
     safeSet(STORAGE_KEYS.LAST_VISITED_ARTICLE, { title, url });
   },
-
   clearAll(): void {
     localStorage.clear();
   },

@@ -3,7 +3,6 @@ import { storageService } from '@/services/storage.service';
 import { CONFIG } from '@/config';
 import { toastService } from '@/services/toast.service';
 
-// أيقونات SVG كدوال صغيرة
 const LoginIcon = () => (
   <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
     <path d="M11.68 14.62L14.24 12.06 11.68 9.5" />
@@ -11,14 +10,12 @@ const LoginIcon = () => (
     <path d="M12 4c4.42 0 8 3 8 8s-3.58 8-8 8" />
   </svg>
 );
-
 const TimerIcon = () => (
   <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
     <circle cx="12" cy="12" r="9" />
     <path d="M12 7v5l3 3" />
   </svg>
 );
-
 const ArticleIcon = () => (
   <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
     <path d="M4 19.5v-15A2.5 2.5 0 016.5 2H20v20H6.5a2.5 2.5 0 01-2.5-2.5z" />
@@ -26,11 +23,11 @@ const ArticleIcon = () => (
     <path d="M8 11h4" />
   </svg>
 );
-
-const MailIcon = () => (
+const ProductIcon = () => (
   <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
-    <rect x="2" y="4" width="20" height="16" rx="2" />
-    <path d="M22 4l-10 8L2 4" />
+    <path d="M21 8l-9-5-9 5v8l9 5 9-5V8z" />
+    <path d="M3 8l9 5 9-5" />
+    <path d="M12 13v8" />
   </svg>
 );
 
@@ -80,8 +77,6 @@ export function StatsPage() {
 
   return (
     <div style="padding:4px 0">
-
-      {/* شبكة البطاقات العلوية (إحصائيات سريعة) */}
       <div class="statsGrid">
         <div class="statCard">
           <div class="statIcon"><LoginIcon /></div>
@@ -101,18 +96,22 @@ export function StatsPage() {
           <div class="statIcon"><ArticleIcon /></div>
           <div class="statInfo">
             {lastArticle() ? (
-              <a href={lastArticle()!.url} target="_blank" rel="noopener" class="statLink">
-                {lastArticle()!.title}
-              </a>
+              <a href={lastArticle()!.url} target="_blank" rel="noopener" class="statLink">{lastArticle()!.title}</a>
             ) : (
               <div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">لا يوجد</div>
             )}
             <div class="statLabel">آخر مقال</div>
           </div>
         </div>
+        <div class="statCard">
+          <div class="statIcon"><ProductIcon /></div>
+          <div class="statInfo">
+            <div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">قيد الإنشاء</div>
+            <div class="statLabel">المنتجات</div>
+          </div>
+        </div>
       </div>
 
-      {/* الرسم البياني المصغر */}
       <div class="chartContainer">
         <div class="chartTitle">نشاط آخر 7 أيام</div>
         <div class="chartBars">
@@ -125,11 +124,8 @@ export function StatsPage() {
         </div>
       </div>
 
-      {/* نموذج الاتصال المدمج */}
       <div class="contactForm">
-        <div class="chartTitle">
-          <span style="display:inline-flex;align-items:center;gap:6px;"><MailIcon /> تواصل مع المشرف</span>
-        </div>
+        <div class="chartTitle"><span style="display:inline-flex;align-items:center;gap:6px;"><MailIcon /> تواصل مع المشرف</span></div>
         <textarea
           class="contactInput"
           placeholder="اكتب رسالتك هنا..."
@@ -137,15 +133,11 @@ export function StatsPage() {
           onInput={(e) => setMessage(e.currentTarget.value)}
           rows="2"
         ></textarea>
-        <button class="contactBtn" onClick={sendMessage}>
-          إرسال
-        </button>
+        <button class="contactBtn" onClick={sendMessage}>إرسال</button>
       </div>
 
       <div style="margin-top:10px;text-align:center">
-        <button onClick={() => history.back()} class="gBtn gBtn-outline" style="display:inline-flex;width:auto;padding:6px 16px;font-size:.7rem">
-          ↩ الرجوع
-        </button>
+        <button onClick={() => history.back()} class="backBtn">↩ الرجوع</button>
       </div>
     </div>
   );
