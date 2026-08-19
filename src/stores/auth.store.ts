@@ -1,7 +1,6 @@
 import { createSignal, createMemo } from 'solid-js';
 import type { UserSession, SheetView } from '@/types';
 import { storageService } from '@/services/storage.service';
-import { supabaseService } from '@/services/supabase.service';
 import { CONFIG } from '@/config';
 
 const [isLoggedIn, setIsLoggedIn] = createSignal(storageService.isLoggedIn());
@@ -20,7 +19,7 @@ const userInitial = createMemo(() => {
   return name ? name[0].toUpperCase() : '';
 });
 
-async function login(name: string, email: string, picture: string) {
+function setLoggedIn(name: string, email: string, picture: string) {
   const now = new Date().toISOString();
   storageService.setUserData({ name, email, picture, joinDate: now });
   setIsLoggedIn(true);
@@ -28,26 +27,9 @@ async function login(name: string, email: string, picture: string) {
   setUserEmail(email);
   setUserPicture(picture);
   setJoinDate(now);
-
-  // محاولة تحميل البيانات من Supabase
-  const profile = await supabaseService.getProfile(email);
-  if (profile) {
-    setUserBio(profile.bio || '');
-    storageService.setUserBio(profile.bio || '');
-  } else {
-    await supabaseService.upsertProfile({ email, name, picture });
-  }
-
-  await supabaseService.incrementLoginCount(email);
-  await supabaseService.addLoginToHistory(email);
-  await supabaseService.setSessionStart(email);
-
-  if (typeof (window as any).updateAccountUI === 'function') {
-    (window as any).updateAccountUI();
-  }
 }
 
-async function logout() {
+function logout() {
   storageService.clearAll();
   setIsLoggedIn(false);
   setUserName('');
@@ -64,15 +46,11 @@ async function logout() {
   }
 }
 
-async function updateProfile(name: string, picture: string, bio: string) {
+function updateProfile(name: string, picture: string, bio: string) {
   storageService.updateProfile(name, picture, bio);
   setUserName(name);
   setUserPicture(picture);
   setUserBio(bio);
-
-  if (userEmail()) {
-    await supabaseService.updateProfile(userEmail(), { name, picture, bio });
-  }
 
   if (typeof (window as any).updateAccountUI === 'function') {
     (window as any).updateAccountUI();
@@ -104,9 +82,11 @@ export const authStore = {
   isSheetOpen,
   isAdmin,
   userInitial,
-  login,
+  setLoggedIn,
   logout,
   updateProfile,
+  setUserBio,
+  setJoinDate,
   refreshSessions,
   openSheet,
   closeSheet,
