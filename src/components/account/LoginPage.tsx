@@ -1,18 +1,17 @@
 import { authStore } from '@/stores/auth.store';
-import { supabaseService } from '@/services/supabase.service';
+import { googleAuthService } from '@/services/google-auth.service';
 import { toastService } from '@/services/toast.service';
 import { CONFIG } from '@/config';
 
 export function LoginPage() {
   let guestEmailRef: HTMLInputElement | undefined;
 
-  const handleGoogleLogin = async () => {
-    try {
-      await supabaseService.signInWithGoogle();
-    } catch (e) {
-      console.error(e);
-      toastService.show('فشل تسجيل الدخول');
-    }
+  const handleGoogleLogin = () => {
+    googleAuthService.login((googleUser) => {
+      authStore.login(googleUser.name, googleUser.email, googleUser.picture);
+      toastService.show(`أهلاً بك، ${googleUser.name}!`);
+      authStore.openSheet('dashboard');
+    });
   };
 
   const handleGuestContinue = () => {

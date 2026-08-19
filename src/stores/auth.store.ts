@@ -19,14 +19,21 @@ const userInitial = createMemo(() => {
   return name ? name[0].toUpperCase() : '';
 });
 
-function setLoggedIn(name: string, email: string, picture: string) {
+function login(name: string, email: string, picture: string, bio?: string) {
   const now = new Date().toISOString();
-  storageService.setUserData({ name, email, picture, joinDate: now });
+  storageService.setUserData({ name, email, picture, joinDate: now, bio: bio || '' });
+  storageService.incrementLoginCount();
+  storageService.setSessionStartTime();
   setIsLoggedIn(true);
   setUserName(name);
   setUserEmail(email);
   setUserPicture(picture);
+  setUserBio(bio || '');
   setJoinDate(now);
+
+  if (typeof (window as any).updateAccountUI === 'function') {
+    (window as any).updateAccountUI();
+  }
 }
 
 function logout() {
@@ -82,11 +89,9 @@ export const authStore = {
   isSheetOpen,
   isAdmin,
   userInitial,
-  setLoggedIn,
+  login,
   logout,
   updateProfile,
-  setUserBio,
-  setJoinDate,
   refreshSessions,
   openSheet,
   closeSheet,
