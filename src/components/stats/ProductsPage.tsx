@@ -1,5 +1,3 @@
-import { authStore } from '@/stores/auth.store';
-
 export function ProductsPage() {
   return (
     <div style="text-align:center;padding:30px 10px;">
@@ -8,9 +6,6 @@ export function ProductsPage() {
       <p style="font-size:.8rem;color:var(--bodyCa);line-height:1.6;">
         نعمل حاليًا على تطوير قائمة المنتجات. ستجد هنا قريبًا أدوات وموارد مفيدة.
       </p>
-      <div style="margin-top:20px;text-align:center">
-        <button onClick={() => authStore.openSheet('dashboard')} class="backBtn">↩ الرجوع للوحة</button>
-      </div>
     </div>
   );
 }

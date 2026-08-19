@@ -2,7 +2,6 @@ import { createSignal } from 'solid-js';
 import { storageService } from '@/services/storage.service';
 import { CONFIG } from '@/config';
 import { toastService } from '@/services/toast.service';
-import { authStore } from '@/stores/auth.store';
 
 const LoginIcon = () => (
   <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
@@ -141,10 +140,6 @@ export function StatsPage() {
           rows="2"
         ></textarea>
         <button class="contactBtn" onClick={sendMessage}>إرسال</button>
-      </div>
-
-      <div style="margin-top:10px;text-align:center">
-        <button onClick={() => authStore.openSheet('dashboard')} class="backBtn">↩ الرجوع للوحة</button>
       </div>
     </div>
   );
