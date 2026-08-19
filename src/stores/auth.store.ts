@@ -1,6 +1,7 @@
 import { createSignal, createMemo } from 'solid-js';
 import type { UserSession, SheetView } from '@/types';
 import { storageService } from '@/services/storage.service';
+import { supabaseService } from '@/services/supabase.service';
 import { CONFIG } from '@/config';
 
 const [isLoggedIn, setIsLoggedIn] = createSignal(storageService.isLoggedIn());
@@ -19,24 +20,37 @@ const userInitial = createMemo(() => {
   return name ? name[0].toUpperCase() : '';
 });
 
-function login(name: string, email: string, picture: string, bio?: string) {
+async function login(name: string, email: string, picture: string) {
   const now = new Date().toISOString();
-  storageService.setUserData({ name, email, picture, joinDate: now, bio: bio || '' });
-  storageService.incrementLoginCount();
-  storageService.setSessionStartTime();
+  storageService.setUserData({ name, email, picture, joinDate: now });
   setIsLoggedIn(true);
   setUserName(name);
   setUserEmail(email);
   setUserPicture(picture);
-  setUserBio(bio || '');
   setJoinDate(now);
+
+  // مزامنة صامتة مع Supabase (لا تغير الواجهة)
+  try {
+    const profile = await supabaseService.getProfile(email);
+    if (profile) {
+      setUserBio(profile.bio || '');
+      storageService.setUserBio(profile.bio || '');
+    } else {
+      await supabaseService.upsertProfile({ email, name, picture, bio: '' });
+    }
+    await supabaseService.incrementLoginCount(email);
+    await supabaseService.addLoginToHistory(email);
+    await supabaseService.setSessionStart(email);
+  } catch (e) {
+    console.warn('Supabase sync skipped:', e);
+  }
 
   if (typeof (window as any).updateAccountUI === 'function') {
     (window as any).updateAccountUI();
   }
 }
 
-function logout() {
+async function logout() {
   storageService.clearAll();
   setIsLoggedIn(false);
   setUserName('');
@@ -53,11 +67,20 @@ function logout() {
   }
 }
 
-function updateProfile(name: string, picture: string, bio: string) {
+async function updateProfile(name: string, picture: string, bio: string) {
   storageService.updateProfile(name, picture, bio);
   setUserName(name);
   setUserPicture(picture);
   setUserBio(bio);
+
+  // مزامنة صامتة
+  try {
+    if (userEmail()) {
+      await supabaseService.updateProfile(userEmail(), { name, picture, bio });
+    }
+  } catch (e) {
+    console.warn('Supabase profile update skipped:', e);
+  }
 
   if (typeof (window as any).updateAccountUI === 'function') {
     (window as any).updateAccountUI();

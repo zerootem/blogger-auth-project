@@ -53,6 +53,9 @@ export const storageService = {
   getUserBio(): string {
     return localStorage.getItem(STORAGE_KEYS.USER_BIO) || '';
   },
+  setUserBio(bio: string): void {
+    localStorage.setItem(STORAGE_KEYS.USER_BIO, bio);
+  },
   setUserData(data: { name: string; email: string; picture: string; joinDate: string; bio?: string }): void {
     safeSet(STORAGE_KEYS.USER_LOGGED_IN, 'true');
     safeSet(STORAGE_KEYS.USER_NAME, data.name);
