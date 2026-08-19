@@ -1,2 +1,14 @@
-/assets/*
+/assets/fab.*
   Cache-Control: public, max-age=31536000, immutable
+
+/assets/auth.js
+  Cache-Control: no-cache
+
+/assets/auth.css
+  Cache-Control: no-cache
+
+/assets/toast.js
+  Cache-Control: no-cache
+
+/assets/toast.css
+  Cache-Control: no-cache
