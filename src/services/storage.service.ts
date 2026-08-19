@@ -41,11 +41,17 @@ export const storageService = {
   getUserName(): string {
     return localStorage.getItem(STORAGE_KEYS.USER_NAME) || '';
   },
+  setUserName(name: string): void {
+    localStorage.setItem(STORAGE_KEYS.USER_NAME, name);
+  },
   getUserEmail(): string {
     return localStorage.getItem(STORAGE_KEYS.USER_EMAIL) || '';
   },
   getUserPicture(): string {
     return localStorage.getItem(STORAGE_KEYS.USER_PICTURE) || '';
+  },
+  setUserPicture(picture: string): void {
+    localStorage.setItem(STORAGE_KEYS.USER_PICTURE, picture);
   },
   getUserJoinDate(): string {
     return localStorage.getItem(STORAGE_KEYS.USER_JOIN_DATE) || '';

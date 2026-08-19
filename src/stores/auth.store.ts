@@ -20,6 +20,33 @@ const userInitial = createMemo(() => {
   return name ? name[0].toUpperCase() : '';
 });
 
+/**
+ * استرجاع بيانات المستخدم من Supabase وتحديث الحالة والتخزين المحلي
+ */
+async function restoreProfileFromSupabase(email: string) {
+  try {
+    const profile = await supabaseService.getProfile(email);
+    if (profile) {
+      const name = profile.name || userName();
+      const picture = profile.picture || userPicture();
+      const bio = profile.bio || '';
+
+      // تحديث الحالة والتخزين المحلي
+      setUserName(name);
+      setUserPicture(picture);
+      setUserBio(bio);
+      storageService.setUserName(name);
+      storageService.setUserPicture(picture);
+      storageService.setUserBio(bio);
+      return true;
+    }
+    return false;
+  } catch (e) {
+    console.warn('Supabase restore skipped:', e);
+    return false;
+  }
+}
+
 async function login(name: string, email: string, picture: string) {
   const now = new Date().toISOString();
   storageService.setUserData({ name, email, picture, joinDate: now });
@@ -33,11 +60,18 @@ async function login(name: string, email: string, picture: string) {
   try {
     const profile = await supabaseService.getProfile(email);
     if (profile) {
+      // استخدم البيانات المخزنة في Supabase إن وجدت
+      setUserName(profile.name || name);
+      setUserPicture(profile.picture || picture);
       setUserBio(profile.bio || '');
+      storageService.setUserName(profile.name || name);
+      storageService.setUserPicture(profile.picture || picture);
       storageService.setUserBio(profile.bio || '');
     } else {
+      // إنشاء ملف جديد في Supabase
       await supabaseService.upsertProfile({ email, name, picture, bio: '' });
     }
+
     await supabaseService.incrementLoginCount(email);
     await supabaseService.addLoginToHistory(email);
     await supabaseService.setSessionStart(email);
@@ -115,6 +149,7 @@ export const authStore = {
   login,
   logout,
   updateProfile,
+  restoreProfileFromSupabase,
   refreshSessions,
   openSheet,
   closeSheet,
