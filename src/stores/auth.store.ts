@@ -20,33 +20,6 @@ const userInitial = createMemo(() => {
   return name ? name[0].toUpperCase() : '';
 });
 
-/**
- * استرجاع بيانات المستخدم من Supabase وتحديث الحالة والتخزين المحلي
- */
-async function restoreProfileFromSupabase(email: string) {
-  try {
-    const profile = await supabaseService.getProfile(email);
-    if (profile) {
-      const name = profile.name || userName();
-      const picture = profile.picture || userPicture();
-      const bio = profile.bio || '';
-
-      // تحديث الحالة والتخزين المحلي
-      setUserName(name);
-      setUserPicture(picture);
-      setUserBio(bio);
-      storageService.setUserName(name);
-      storageService.setUserPicture(picture);
-      storageService.setUserBio(bio);
-      return true;
-    }
-    return false;
-  } catch (e) {
-    console.warn('Supabase restore skipped:', e);
-    return false;
-  }
-}
-
 async function login(name: string, email: string, picture: string) {
   const now = new Date().toISOString();
   storageService.setUserData({ name, email, picture, joinDate: now });
@@ -56,11 +29,11 @@ async function login(name: string, email: string, picture: string) {
   setUserPicture(picture);
   setJoinDate(now);
 
-  // مزامنة صامتة مع Supabase (لا تغير الواجهة)
   try {
+    // تحقق مما إذا كان الملف موجودًا
     const profile = await supabaseService.getProfile(email);
     if (profile) {
-      // استخدم البيانات المخزنة في Supabase إن وجدت
+      // استرجع البيانات المحفوظة
       setUserName(profile.name || name);
       setUserPicture(profile.picture || picture);
       setUserBio(profile.bio || '');
@@ -68,7 +41,7 @@ async function login(name: string, email: string, picture: string) {
       storageService.setUserPicture(profile.picture || picture);
       storageService.setUserBio(profile.bio || '');
     } else {
-      // إنشاء ملف جديد في Supabase
+      // أنشئ ملفًا جديدًا
       await supabaseService.upsertProfile({ email, name, picture, bio: '' });
     }
 
@@ -107,7 +80,6 @@ async function updateProfile(name: string, picture: string, bio: string) {
   setUserPicture(picture);
   setUserBio(bio);
 
-  // مزامنة صامتة
   try {
     if (userEmail()) {
       await supabaseService.updateProfile(userEmail(), { name, picture, bio });
@@ -149,7 +121,6 @@ export const authStore = {
   login,
   logout,
   updateProfile,
-  restoreProfileFromSupabase,
   refreshSessions,
   openSheet,
   closeSheet,
