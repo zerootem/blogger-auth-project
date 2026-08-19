@@ -2,6 +2,7 @@ import { createSignal } from 'solid-js';
 import { storageService } from '@/services/storage.service';
 import { CONFIG } from '@/config';
 import { toastService } from '@/services/toast.service';
+import { authStore } from '@/stores/auth.store';
 
 const LoginIcon = () => (
   <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
@@ -28,6 +29,12 @@ const ProductIcon = () => (
     <path d="M21 8l-9-5-9 5v8l9 5 9-5V8z" />
     <path d="M3 8l9 5 9-5" />
     <path d="M12 13v8" />
+  </svg>
+);
+const MailIcon = () => (
+  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+    <rect x="2" y="4" width="20" height="16" rx="2" />
+    <path d="M22 4l-10 8L2 4" />
   </svg>
 );
 
@@ -137,14 +144,8 @@ export function StatsPage() {
       </div>
 
       <div style="margin-top:10px;text-align:center">
-        <button onClick={() => history.back()} class="backBtn">↩ الرجوع</button>
+        <button onClick={() => authStore.openSheet('dashboard')} class="backBtn">↩ الرجوع للوحة</button>
       </div>
     </div>
   );
 }
-const MailIcon = () => (
-  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
-    <rect x="2" y="4" width="20" height="16" rx="2" />
-    <path d="M22 4l-10 8L2 4" />
-  </svg>
-);
