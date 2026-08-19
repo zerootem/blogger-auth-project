@@ -25,7 +25,7 @@ function initApp() {
 
   if (!authStore.isLoggedIn()) {
     googleAuthService.initOneTap((googleUser) => {
-      authStore.login(googleUser.name, googleUser.email, googleUser.picture, googleUser.bio || '');
+      authStore.login(googleUser.name, googleUser.email, googleUser.picture);
       communityService.addCurrentUserToCommunity();
       toastService.show(`أهلاً بك، ${googleUser.name}!`);
     });

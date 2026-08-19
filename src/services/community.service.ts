@@ -20,12 +20,14 @@ export const communityService = {
         joinDate,
         lastSeen: new Date().toISOString(),
         online: true,
+        bio: storageService.getUserBio(),
       });
     } else {
       members[existingIndex] = {
         ...members[existingIndex],
         lastSeen: new Date().toISOString(),
         online: true,
+        bio: storageService.getUserBio(),
       };
     }
 

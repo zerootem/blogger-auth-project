@@ -26,13 +26,14 @@ export default defineConfig({
       output: {
         entryFileNames: (chunk) => {
           if (chunk.name === 'toast') return 'assets/toast.js';
+          if (chunk.name === 'auth') return 'assets/auth.js';
           if (chunk.name === 'fab') return 'assets/fab.[hash].js';
-          if (chunk.name === 'auth') return 'assets/auth.[hash].js';
           return 'assets/[name].[hash].js';
         },
         chunkFileNames: 'assets/[name]-chunk.[hash].js',
         assetFileNames: (asset) => {
           if (asset.name === 'toast.css') return 'assets/toast.css';
+          if (asset.name === 'auth.css') return 'assets/auth.css';
           return 'assets/[name].[hash][extname]';
         },
       },

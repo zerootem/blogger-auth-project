@@ -142,3 +142,9 @@ export function StatsPage() {
     </div>
   );
 }
+const MailIcon = () => (
+  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+    <rect x="2" y="4" width="20" height="16" rx="2" />
+    <path d="M22 4l-10 8L2 4" />
+  </svg>
+);
