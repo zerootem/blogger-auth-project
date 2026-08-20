@@ -3,6 +3,18 @@ import { Toaster, toast } from 'vue-sonner';
 import 'vue-sonner/style.css';
 import '@/styles/toast-custom.css';
 
+const CloseIcon = () => h('svg', {
+  class: 'line',
+  viewBox: '0 0 24 24',
+  width: '14',
+  height: '14',
+  stroke: 'currentColor',
+  'stroke-width': '2',
+  fill: 'none',
+}, [
+  h('path', { d: 'M18 6L6 18M6 6l12 12' })
+]);
+
 const CustomToast = defineComponent({
   props: {
     message: { type: String, default: '' },
@@ -18,21 +30,14 @@ const CustomToast = defineComponent({
         h('button', {
           class: 'pwa-toast-refresh',
           type: 'button',
-          onClick: (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            props.onReload();
-          },
+          onClick: (e) => { e.stopPropagation(); e.preventDefault(); props.onReload(); },
         }, 'تحديث'),
         h('button', {
           class: 'pwa-toast-close',
           type: 'button',
-          onClick: (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            props.onClose();
-          },
-        }, 'إغلاق'),
+          'aria-label': 'إغلاق',
+          onClick: (e) => { e.stopPropagation(); e.preventDefault(); props.onClose(); },
+        }, [CloseIcon()]),
       ]),
     ]);
   },
@@ -61,7 +66,7 @@ app.mount(container);
 
 function showUpdateToast() {
   toast.custom((t) => h(CustomToast, {
-    message: 'يوجد نسخة جديدة من الصفحة. اضغط تحديث لإعادة التحميل.',
+    message: 'يوجد تحديث جديد، اضغط تحديث لإعادة تحميل الصفحة.',
     onReload: () => location.reload(),
     onClose: () => toast.dismiss(t.id),
   }), {
@@ -81,32 +86,19 @@ function showActionToast(message: string, actionLabel: string, actionOnClick: ()
 (window as any).showUpdateToast = showUpdateToast;
 (window as any).showActionToast = showActionToast;
 
-// منطق الخمول المحسّن
 let lastActivity = Date.now();
 let idleToastShown = false;
-const IDLE_DELAY = 30000; // 30 ثانية
+const IDLE_DELAY = 30000;
 
 function resetActivity(e?: Event) {
   const target = e?.target as HTMLElement | null;
-  // لا نغلق التنبيه إذا كان النقر على زر تحديث أو إغلاق
-  if (target && target.closest('.pwa-toast-refresh, .pwa-toast-close')) {
-    return;
-  }
+  if (target && target.closest('.pwa-toast-refresh, .pwa-toast-close')) return;
   lastActivity = Date.now();
-  if (idleToastShown) {
-    toast.dismiss();
-    idleToastShown = false;
-  }
+  if (idleToastShown) { toast.dismiss(); idleToastShown = false; }
 }
 
-['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
-  window.addEventListener(evt, resetActivity, { passive: true });
-});
-
-// مراقبة حركة الماوس بدون إغلاق التنبيه
-window.addEventListener('mousemove', () => {
-  lastActivity = Date.now();
-}, { passive: true });
+['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evt => window.addEventListener(evt, resetActivity, { passive: true }));
+window.addEventListener('mousemove', () => { lastActivity = Date.now(); }, { passive: true });
 
 setInterval(() => {
   if (!idleToastShown && Date.now() - lastActivity >= IDLE_DELAY) {

@@ -18,9 +18,7 @@ export function DashboardPage() {
     if (!hasCurrent) {
       const newSession: UserSession = {
         id: Date.now(),
-        time: new Date().toLocaleString('en-US', {
-          day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-        }),
+        time: new Date().toLocaleString('en-US', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
         os: navigator.userAgent.includes('Win') ? 'Windows' :
             navigator.userAgent.includes('Mac') ? 'Mac' :
             navigator.userAgent.includes('Linux') ? 'Linux' : 'Android/iOS',
@@ -32,14 +30,9 @@ export function DashboardPage() {
     authStore.refreshSessions();
   };
 
-  onMount(() => {
-    ensureCurrentSession();
-  });
+  onMount(() => ensureCurrentSession());
 
-  const sessions = () => {
-    const raw = authStore.sessions();
-    return raw.slice().sort((a, b) => b.id - a.id);
-  };
+  const sessions = () => authStore.sessions().slice().sort((a, b) => b.id - a.id);
 
   const handleRemoveSession = (idx: number) => {
     const sessionToRemove = sessions()[idx];
@@ -83,33 +76,17 @@ export function DashboardPage() {
 
   return (
     <div>
-      <p style="font-size:0.9rem;font-weight:500;margin-bottom:10px;color:var(--headC)">
-        عرض حسابك وإدارته.
-      </p>
+      <p style="font-size:0.9rem;font-weight:500;margin-bottom:10px;color:var(--headC)">عرض حسابك وإدارته.</p>
       <div class="acctCard">
         <div class="acctUser">
           <div class="acctAvatar" style="border-radius:8px;">
-            <img
-              src={authStore.userPicture() || `https://ui-avatars.com/api/?name=${encodeURIComponent(authStore.userName())}&background=0D8ABC&color=fff`}
-              alt={authStore.userName()}
-            />
+            <img src={authStore.userPicture() || `https://ui-avatars.com/api/?name=${encodeURIComponent(authStore.userName())}&background=0D8ABC&color=fff`} alt={authStore.userName()} />
           </div>
           <div class="acctInfo">
             <div class="acctName">{authStore.userName()}</div>
-            <div class="acctEmail" style="display:flex;align-items:center;gap:4px;">
-              <span>{authStore.userEmail()}</span>
-            </div>
-            {authStore.userBio() && (
-              <div style="font-size:0.7rem;color:var(--bodyCa);margin-top:4px;">
-                {authStore.userBio()}
-              </div>
-            )}
-            <div class="acctMeta">
-              انضم:{' '}
-              {authStore.joinDate()
-                ? new Date(authStore.joinDate()).toLocaleDateString('ar-EG', { day: '2-digit', month: 'short', year: 'numeric' })
-                : 'غير محدد'}
-            </div>
+            <div class="acctEmail">{authStore.userEmail()}</div>
+            {authStore.userBio() && <div style="font-size:0.7rem;color:var(--bodyCa);margin-top:4px;">{authStore.userBio()}</div>}
+            <div class="acctMeta">انضم: {authStore.joinDate() ? new Date(authStore.joinDate()).toLocaleDateString('ar-EG', { day: '2-digit', month: 'short', year: 'numeric' }) : 'غير محدد'}</div>
           </div>
           <button class="settingsTrigger" onClick={() => setShowSettings(!showSettings())} title="الإعدادات">
             <svg class="line" viewBox="0 0 24 24" width="18" height="18">
@@ -119,72 +96,43 @@ export function DashboardPage() {
           </button>
         </div>
 
-        {/* قسم الجلسات */}
         <div class="acctSessions">
           <label>الجلسات النشطة</label>
-          {sessions().length === 0 ? (
-            <div style="font-size:.65rem;color:var(--bodyCa)">لا توجد جلسات</div>
-          ) : (
-            sessions().map((session, idx) => (
-              <div class="sessionItem">
-                <div class="info">
-                  <div style="display:flex;align-items:center;gap:3px;">
-                    <svg class="line" viewBox="0 0 24 24" width="10" height="10">
-                      <path d="M20.75 13.25C20.75 18.08 16.83 22 12 22C7.17 22 3.25 18.08 3.25 13.25C3.25 8.42 7.17 4.5 12 4.5C16.83 4.5 20.75 8.42 20.75 13.25Z" />
-                      <path d="M12 8V13" />
-                      <path d="M9 2H15" stroke-miterlimit="10" />
-                    </svg>
-                    <b>الوقت:</b> <span dir="ltr">{session.time}</span>
-                  </div>
-                  <div style="display:flex;align-items:center;gap:3px;">
-                    <b>النظام:</b> {session.os}
-                  </div>
-                  <div style="display:flex;align-items:center;gap:3px;">
-                    <b>IP:</b> {session.ip || "محلي"}
-                  </div>
-                  <div style="display:flex;align-items:center;gap:3px;">
-                    {session.isCurrent ? <b>الجلسة الحالية.</b> : <span style="opacity:.7">جلسة سابقة</span>}
-                  </div>
+          {sessions().length === 0 ? <div style="font-size:.65rem;color:var(--bodyCa)">لا توجد جلسات</div> : sessions().map((session, idx) => (
+            <div class="sessionItem">
+              <div class="info">
+                <div style="display:flex;align-items:center;gap:3px;">
+                  <svg class="line" viewBox="0 0 24 24" width="10" height="10"><path d="M20.75 13.25C20.75 18.08 16.83 22 12 22C7.17 22 3.25 18.08 3.25 13.25C3.25 8.42 7.17 4.5 12 4.5C16.83 4.5 20.75 8.42 20.75 13.25Z"/><path d="M12 8V13"/><path d="M9 2H15" stroke-miterlimit="10"/></svg>
+                  <b>الوقت:</b> <span dir="ltr">{session.time}</span>
                 </div>
-                <div class="actions">
-                  {session.isCurrent ? (
-                    <button class="btnLogout" onClick={handleLogout} title="تسجيل الخروج">
-                      <svg class="line" viewBox="0 0 24 24" style="width:20px;height:20px;flex-shrink:0;">
-                        <path d="M17.4399 14.62L19.9999 12.06L17.4399 9.5" />
-                        <path d="M9.76001 12.0601H19.93" />
-                        <path d="M11.76 20C7.34001 20 3.76001 17 3.76001 12C3.76001 7 7.34001 4 11.76 4" />
-                      </svg>
-                    </button>
-                  ) : (
-                    <button class="btnRemove" onClick={() => handleRemoveSession(idx)}>✕</button>
-                  )}
+                <div style="display:flex;align-items:center;gap:3px;">
+                  <svg class="line" viewBox="0 0 24 24" width="10" height="10"><path d="M10 16.95H6.21C2.84 16.95 2 16.11 2 12.74V6.74003C2 3.37003 2.84 2.53003 6.21 2.53003H16.74C20.11 2.53003 20.95 3.37003 20.95 6.74003"/><path d="M10 21.4699V16.95"/><path d="M2 12.95H10"/><path d="M6.73999 21.47H9.99999"/><path d="M22 12.8V18.51C22 20.88 21.41 21.47 19.04 21.47H15.49C13.12 21.47 12.53 20.88 12.53 18.51V12.8C12.53 10.43 13.12 9.83997 15.49 9.83997H19.04C21.41 9.83997 22 10.43 22 12.8Z"/><path d="M17.2445 18.25H17.2535"/></svg>
+                  <b>النظام:</b> {session.os}
+                </div>
+                <div style="display:flex;align-items:center;gap:3px;">
+                  <svg class="line" viewBox="0 0 24 24" width="10" height="10"><path d="M12 13.4299C13.7231 13.4299 15.12 12.0331 15.12 10.3099C15.12 8.58681 13.7231 7.18994 12 7.18994C10.2769 7.18994 8.88 8.58681 8.88 10.3099C8.88 12.0331 10.2769 13.4299 12 13.4299Z"/><path d="M3.62001 8.49C5.59001 -0.169998 18.42 -0.159997 20.38 8.5C21.53 13.58 18.37 17.88 15.6 20.54C13.59 22.48 10.41 22.48 8.39001 20.54C5.63001 17.88 2.47001 13.57 3.62001 8.49Z"/></svg>
+                  <b>IP:</b> {session.ip || "محلي"}
+                </div>
+                <div style="display:flex;align-items:center;gap:3px;">
+                  <svg class="line" viewBox="0 0 24 24" width="10" height="10"><path d="M14.4399 19.05L15.9599 20.57L18.9999 17.53"/><path d="M12.16 10.87C12.06 10.86 11.94 10.86 11.83 10.87C9.44997 10.79 7.55997 8.84 7.55997 6.44C7.54997 3.99 9.53997 2 11.99 2C14.44 2 16.43 3.99 16.43 6.44C16.43 8.84 14.53 10.79 12.16 10.87Z"/><path d="M11.99 21.8101C10.17 21.8101 8.36004 21.3501 6.98004 20.4301C4.56004 18.8101 4.56004 16.1701 6.98004 14.5601C9.73004 12.7201 14.24 12.7201 16.99 14.5601"/></svg>
+                  {session.isCurrent ? <b>الجلسة الحالية.</b> : <span style="opacity:.7">جلسة سابقة</span>}
                 </div>
               </div>
-            ))
-          )}
+              <div class="actions">
+                {session.isCurrent ? <button class="btnLogout" onClick={handleLogout} title="تسجيل الخروج"><svg class="line" viewBox="0 0 24 24" style="width:20px;height:20px;flex-shrink:0;"><path d="M17.4399 14.62L19.9999 12.06L17.4399 9.5"/><path d="M9.76001 12.0601H19.93"/><path d="M11.76 20C7.34001 20 3.76001 17 3.76001 12C3.76001 7 7.34001 4 11.76 4"/></svg></button> : <button class="btnRemove" onClick={() => handleRemoveSession(idx)}>✕</button>}
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* لوحة تعديل الملف الشخصي */}
-        <div class="editPanel" id="editPanel" style={{ display: showSettings() ? 'block' : 'none' }}>
-          <form ref={editForm} onSubmit={handleEditSubmit}>
-            <label>
-              الاسم:
-              <input type="text" ref={nameInput} class="input" value={authStore.userName()} maxlength="32" required />
-            </label>
-            <label>
-              النبذة / الوصف:
-              <textarea ref={bioInput} class="input" style="height:60px;resize:vertical;" placeholder="أضف نبذة قصيرة عنك">{authStore.userBio()}</textarea>
-            </label>
+        <div class="editPanel" style={{ display: showSettings() ? 'block' : 'none' }}>
+          <form onSubmit={handleEditSubmit}>
+            <label>الاسم:<input type="text" ref={nameInput} class="input" value={authStore.userName()} maxlength="32" required /></label>
+            <label>النبذة / الوصف:<textarea ref={bioInput} class="input" style="height:60px;resize:vertical;" placeholder="أضف نبذة قصيرة عنك">{authStore.userBio()}</textarea></label>
             <div class="border-t my-2" />
             <div class="text-sm">تغيير الصورة:</div>
-            <label class="block mb-1">
-              (رفع صورة من جهازك)
-              <input type="file" ref={picFileInput} accept="image/*" class="input" />
-            </label>
-            <label class="block">
-              (أو رابط مباشر للصورة)
-              <input type="url" ref={picUrlInput} class="input" placeholder="https://example.com/avatar.jpg" />
-            </label>
+            <label class="block mb-1">(رفع صورة من جهازك)<input type="file" ref={picFileInput} accept="image/*" class="input" /></label>
+            <label class="block">(أو رابط مباشر للصورة)<input type="url" ref={picUrlInput} class="input" placeholder="https://example.com/avatar.jpg" /></label>
             <button type="submit" class="button primary w-full mt-2">حفظ التعديلات</button>
           </form>
         </div>

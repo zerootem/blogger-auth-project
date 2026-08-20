@@ -2,6 +2,7 @@ import { createSignal } from 'solid-js';
 import { storageService } from '@/services/storage.service';
 import { CONFIG } from '@/config';
 import { toastService } from '@/services/toast.service';
+import { authStore } from '@/stores/auth.store';
 
 const LoginIcon = () => (
   <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
@@ -34,6 +35,12 @@ const MailIcon = () => (
   <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
     <rect x="2" y="4" width="20" height="16" rx="2" />
     <path d="M22 4l-10 8L2 4" />
+  </svg>
+);
+const BackIcon = () => (
+  <svg class="line" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+    <path d="M9.57 5.92993L3.5 11.9999L9.57 18.0699" stroke-miterlimit="10" />
+    <path d="M20.5 12H3.67004" stroke-miterlimit="10" />
   </svg>
 );
 
@@ -70,10 +77,7 @@ export function StatsPage() {
   const [message, setMessage] = createSignal('');
   const sendMessage = () => {
     const msg = message().trim();
-    if (!msg) {
-      toastService.show('الرجاء كتابة رسالة');
-      return;
-    }
+    if (!msg) { toastService.show('الرجاء كتابة رسالة'); return; }
     const subject = encodeURIComponent('رسالة من مركز الإحصائيات');
     const body = encodeURIComponent(`المستخدم: ${storageService.getUserName()} (${storageService.getUserEmail()})\n\n${msg}`);
     window.location.href = `mailto:${CONFIG.adminEmail}?subject=${subject}&body=${body}`;
@@ -84,62 +88,25 @@ export function StatsPage() {
   return (
     <div style="padding:4px 0">
       <div class="statsGrid">
-        <div class="statCard">
-          <div class="statIcon"><LoginIcon /></div>
-          <div class="statInfo">
-            <div class="statValue">{loginCount()}</div>
-            <div class="statLabel">دخول</div>
-          </div>
-        </div>
-        <div class="statCard">
-          <div class="statIcon"><TimerIcon /></div>
-          <div class="statInfo">
-            <div class="statValue">{sessionDuration()}</div>
-            <div class="statLabel">الجلسة</div>
-          </div>
-        </div>
-        <div class="statCard">
-          <div class="statIcon"><ArticleIcon /></div>
-          <div class="statInfo">
-            {lastArticle() ? (
-              <a href={lastArticle()!.url} target="_blank" rel="noopener" class="statLink">{lastArticle()!.title}</a>
-            ) : (
-              <div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">لا يوجد</div>
-            )}
-            <div class="statLabel">آخر مقال</div>
-          </div>
-        </div>
-        <div class="statCard">
-          <div class="statIcon"><ProductIcon /></div>
-          <div class="statInfo">
-            <div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">قيد الإنشاء</div>
-            <div class="statLabel">المنتجات</div>
-          </div>
-        </div>
+        <div class="statCard"><div class="statIcon"><LoginIcon /></div><div class="statInfo"><div class="statValue">{loginCount()}</div><div class="statLabel">دخول</div></div></div>
+        <div class="statCard"><div class="statIcon"><TimerIcon /></div><div class="statInfo"><div class="statValue">{sessionDuration()}</div><div class="statLabel">الجلسة</div></div></div>
+        <div class="statCard"><div class="statIcon"><ArticleIcon /></div><div class="statInfo">{lastArticle() ? <a href={lastArticle()!.url} target="_blank" rel="noopener" class="statLink">{lastArticle()!.title}</a> : <div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">لا يوجد</div>}<div class="statLabel">آخر مقال</div></div></div>
+        <div class="statCard"><div class="statIcon"><ProductIcon /></div><div class="statInfo"><div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">قيد الإنشاء</div><div class="statLabel">المنتجات</div></div></div>
       </div>
 
       <div class="chartContainer">
         <div class="chartTitle">نشاط آخر 7 أيام</div>
-        <div class="chartBars">
-          {last7Days().map(day => (
-            <div class="chartBarItem">
-              <div class="chartBar" style={{ height: Math.max(day.count * 18, 4) + 'px' }} title={`${day.count} مرات`}></div>
-              <div class="chartLabel">{day.label}</div>
-            </div>
-          ))}
-        </div>
+        <div class="chartBars">{last7Days().map(day => <div class="chartBarItem"><div class="chartBar" style={{ height: Math.max(day.count * 18, 4) + 'px' }} title={`${day.count} مرات`}></div><div class="chartLabel">{day.label}</div></div>)}</div>
       </div>
 
       <div class="contactForm">
         <div class="chartTitle"><span style="display:inline-flex;align-items:center;gap:6px;"><MailIcon /> تواصل مع المشرف</span></div>
-        <textarea
-          class="contactInput"
-          placeholder="اكتب رسالتك هنا..."
-          value={message()}
-          onInput={(e) => setMessage(e.currentTarget.value)}
-          rows="2"
-        ></textarea>
+        <textarea class="contactInput" placeholder="اكتب رسالتك هنا..." value={message()} onInput={(e) => setMessage(e.currentTarget.value)} rows="2"></textarea>
         <button class="contactBtn" onClick={sendMessage}>إرسال</button>
+      </div>
+
+      <div style="border-top:1px solid var(--contentL);margin-top:16px;padding-top:12px;display:flex;justify-content:flex-start;">
+        <button onClick={() => authStore.openSheet('dashboard')} class="backBtn"><BackIcon /> الرجوع للوحة</button>
       </div>
     </div>
   );
