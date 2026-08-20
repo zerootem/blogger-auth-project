@@ -15,8 +15,22 @@ const CustomToast = defineComponent({
         h('div', { class: 'pwa-toast-desc' }, props.message),
       ]),
       h('div', { class: 'pwa-toast-buttons' }, [
-        h('button', { class: 'pwa-toast-refresh', type: 'button', onClick: props.onReload }, 'تحديث'),
-        h('button', { class: 'pwa-toast-close', type: 'button', onClick: props.onClose }, 'إغلاق'),
+        h('button', {
+          class: 'pwa-toast-refresh',
+          type: 'button',
+          onClick: (e) => {
+            e.stopPropagation(); // منع إغلاق التنبيه
+            props.onReload();
+          },
+        }, 'تحديث'),
+        h('button', {
+          class: 'pwa-toast-close',
+          type: 'button',
+          onClick: (e) => {
+            e.stopPropagation(); // منع إغلاق التنبيه
+            props.onClose();
+          },
+        }, 'إغلاق'),
       ]),
     ]);
   },
@@ -65,7 +79,7 @@ function showActionToast(message: string, actionLabel: string, actionOnClick: ()
 (window as any).showUpdateToast = showUpdateToast;
 (window as any).showActionToast = showActionToast;
 
-// منطق الخمول: يظهر التنبيه بعد 30 ثانية من عدم النشاط (للتجربة)
+// منطق الخمول: يظهر التنبيه بعد 30 ثانية من عدم النشاط
 let lastActivity = Date.now();
 let idleToastShown = false;
 const IDLE_DELAY = 30000; // 30 ثانية
