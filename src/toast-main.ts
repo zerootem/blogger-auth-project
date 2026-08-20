@@ -1,4 +1,5 @@
 import { createApp, h, defineComponent } from 'vue';
+import type { MouseEvent, PointerEvent } from 'vue';
 import { Toaster, toast } from 'vue-sonner';
 import 'vue-sonner/style.css';
 import '@/styles/toast-custom.css';
@@ -18,9 +19,9 @@ const CustomToast = defineComponent({
         h('button', {
           class: 'pwa-toast-refresh',
           type: 'button',
-          onPointerDown: (e) => e.stopPropagation(),  // منع إغلاق التنبيه
-          onMouseDown: (e) => e.stopPropagation(),
-          onClick: (e) => {
+          onPointerDown: (e: PointerEvent) => e.stopPropagation(),
+          onMouseDown: (e: MouseEvent) => e.stopPropagation(),
+          onClick: (e: MouseEvent) => {
             e.stopPropagation();
             props.onReload();
           },
@@ -28,9 +29,9 @@ const CustomToast = defineComponent({
         h('button', {
           class: 'pwa-toast-close',
           type: 'button',
-          onPointerDown: (e) => e.stopPropagation(),
-          onMouseDown: (e) => e.stopPropagation(),
-          onClick: (e) => {
+          onPointerDown: (e: PointerEvent) => e.stopPropagation(),
+          onMouseDown: (e: MouseEvent) => e.stopPropagation(),
+          onClick: (e: MouseEvent) => {
             e.stopPropagation();
             props.onClose();
           },
