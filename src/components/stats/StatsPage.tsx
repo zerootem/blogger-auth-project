@@ -105,7 +105,7 @@ export function StatsPage() {
         <button class="contactBtn" onClick={sendMessage}>إرسال</button>
       </div>
 
-      <div style="border-top:1px solid var(--contentL);margin-top:16px;padding-top:12px;display:flex;justify-content:flex-start;">
+      <div class="sheetFooter">
         <button onClick={() => authStore.openSheet('dashboard')} class="backBtn"><BackIcon /> الرجوع للوحة</button>
       </div>
     </div>

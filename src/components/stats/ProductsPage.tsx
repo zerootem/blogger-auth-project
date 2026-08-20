@@ -13,7 +13,7 @@ export function ProductsPage() {
       <div style="font-size:2rem;margin-bottom:10px;">📦</div>
       <h2 style="font-size:1.1rem;font-weight:700;color:var(--headC);margin:0 0 6px;">قيد الإنشاء ،،،</h2>
       <p style="font-size:.8rem;color:var(--bodyCa);line-height:1.6;">نعمل حاليًا على تطوير قائمة المنتجات. ستجد هنا قريبًا أدوات وموارد مفيدة.</p>
-      <div style="border-top:1px solid var(--contentL);margin-top:16px;padding-top:12px;display:flex;justify-content:flex-start;">
+      <div class="sheetFooter">
         <button onClick={() => authStore.openSheet('dashboard')} class="backBtn"><BackIcon /> الرجوع للوحة</button>
       </div>
     </div>

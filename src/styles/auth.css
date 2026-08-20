@@ -162,3 +162,72 @@
   stroke: currentColor;
   fill: none;
 }
+
+/* ===== تثبيت ارتفاع النافذة ===== */
+.lgnSheet {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  max-height: min(600px, calc(100vh - 120px)); /* ارتفاع ثابت معقول */
+  overflow: hidden;
+}
+.lgnHeader {
+  flex-shrink: 0;
+}
+.lgnBody {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+/* شريط تمرير احترافي */
+.lgnBody::-webkit-scrollbar {
+  width: 5px;
+}
+.lgnBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+.lgnBody::-webkit-scrollbar-thumb {
+  background: var(--bodyCa, #9ca3af);
+  border-radius: 8px;
+}
+.lgnBody::-webkit-scrollbar-thumb:hover {
+  background: var(--bodyC, #6b7280);
+}
+
+/* ===== الفواصل في التذييل ===== */
+.sheetFooter {
+  border-top: 1px solid var(--contentL, #e5e7eb);
+  margin-top: 16px;
+  padding-top: 12px;
+  display: flex;
+  justify-content: flex-start; /* محاذاة لليمين في RTL */
+  gap: 8px;
+}
+
+/* ===== زر الرجوع الموحد ===== */
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--contentL, #e5e7eb);
+  border-radius: 6px;
+  background: var(--contentB, #fff);
+  color: var(--bodyC, #374151);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.backBtn:hover {
+  background: var(--bodyB, #f3f4f6);
+  border-color: var(--bodyCa, #9ca3af);
+}
+.backBtn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  flex-shrink: 0;
+}
