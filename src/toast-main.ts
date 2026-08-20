@@ -1,5 +1,4 @@
 import { createApp, h, defineComponent } from 'vue';
-import type { MouseEvent, PointerEvent } from 'vue';
 import { Toaster, toast } from 'vue-sonner';
 import 'vue-sonner/style.css';
 import '@/styles/toast-custom.css';
@@ -19,20 +18,18 @@ const CustomToast = defineComponent({
         h('button', {
           class: 'pwa-toast-refresh',
           type: 'button',
-          onPointerDown: (e: PointerEvent) => e.stopPropagation(),
-          onMouseDown: (e: MouseEvent) => e.stopPropagation(),
-          onClick: (e: MouseEvent) => {
+          onClick: (e) => {
             e.stopPropagation();
+            e.preventDefault();
             props.onReload();
           },
         }, 'تحديث'),
         h('button', {
           class: 'pwa-toast-close',
           type: 'button',
-          onPointerDown: (e: PointerEvent) => e.stopPropagation(),
-          onMouseDown: (e: MouseEvent) => e.stopPropagation(),
-          onClick: (e: MouseEvent) => {
+          onClick: (e) => {
             e.stopPropagation();
+            e.preventDefault();
             props.onClose();
           },
         }, 'إغلاق'),
@@ -65,12 +62,8 @@ app.mount(container);
 function showUpdateToast() {
   toast.custom((t) => h(CustomToast, {
     message: 'يوجد نسخة جديدة من الصفحة. اضغط تحديث لإعادة التحميل.',
-    onReload: () => {
-      location.reload();
-    },
-    onClose: () => {
-      toast.dismiss(t.id);
-    },
+    onReload: () => location.reload(),
+    onClose: () => toast.dismiss(t.id),
   }), {
     duration: 30000,
     position: 'bottom-left',
@@ -88,20 +81,17 @@ function showActionToast(message: string, actionLabel: string, actionOnClick: ()
 (window as any).showUpdateToast = showUpdateToast;
 (window as any).showActionToast = showActionToast;
 
-// منطق الخمول
+// منطق الخمول المحسّن
 let lastActivity = Date.now();
 let idleToastShown = false;
-const IDLE_DELAY = 30000;
+const IDLE_DELAY = 30000; // 30 ثانية
 
-function isInsideToast(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false;
-  return !!target.closest('.pwa-toast-wrapper');
-}
-
-function resetActivity(e: Event) {
-  // إذا كان الحدث من داخل التنبيه، لا نعيد ضبط النشاط ولا نغلق التنبيه
-  if (isInsideToast(e.target)) return;
-
+function resetActivity(e?: Event) {
+  const target = e?.target as HTMLElement | null;
+  // لا نغلق التنبيه إذا كان النقر على زر تحديث أو إغلاق
+  if (target && target.closest('.pwa-toast-refresh, .pwa-toast-close')) {
+    return;
+  }
   lastActivity = Date.now();
   if (idleToastShown) {
     toast.dismiss();
@@ -109,9 +99,14 @@ function resetActivity(e: Event) {
   }
 }
 
-['pointerdown', 'keydown', 'scroll', 'touchstart', 'mousemove'].forEach(evt => {
+['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
   window.addEventListener(evt, resetActivity, { passive: true });
 });
+
+// مراقبة حركة الماوس بدون إغلاق التنبيه
+window.addEventListener('mousemove', () => {
+  lastActivity = Date.now();
+}, { passive: true });
 
 setInterval(() => {
   if (!idleToastShown && Date.now() - lastActivity >= IDLE_DELAY) {
