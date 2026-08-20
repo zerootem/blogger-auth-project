@@ -65,10 +65,10 @@ function showActionToast(message: string, actionLabel: string, actionOnClick: ()
 (window as any).showUpdateToast = showUpdateToast;
 (window as any).showActionToast = showActionToast;
 
-// منطق الخمول: يظهر التنبيه بعد ساعة من عدم النشاط
+// منطق الخمول: يظهر التنبيه بعد 30 ثانية من عدم النشاط (للتجربة)
 let lastActivity = Date.now();
 let idleToastShown = false;
-const IDLE_DELAY = 3600000; // ساعة واحدة
+const IDLE_DELAY = 30000; // 30 ثانية
 
 function resetActivity() {
   lastActivity = Date.now();
