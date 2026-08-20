@@ -18,16 +18,20 @@ const CustomToast = defineComponent({
         h('button', {
           class: 'pwa-toast-refresh',
           type: 'button',
+          onPointerDown: (e) => e.stopPropagation(),  // منع إغلاق التنبيه
+          onMouseDown: (e) => e.stopPropagation(),
           onClick: (e) => {
-            e.stopPropagation(); // منع إغلاق التنبيه
+            e.stopPropagation();
             props.onReload();
           },
         }, 'تحديث'),
         h('button', {
           class: 'pwa-toast-close',
           type: 'button',
+          onPointerDown: (e) => e.stopPropagation(),
+          onMouseDown: (e) => e.stopPropagation(),
           onClick: (e) => {
-            e.stopPropagation(); // منع إغلاق التنبيه
+            e.stopPropagation();
             props.onClose();
           },
         }, 'إغلاق'),
@@ -60,10 +64,14 @@ app.mount(container);
 function showUpdateToast() {
   toast.custom((t) => h(CustomToast, {
     message: 'يوجد نسخة جديدة من الصفحة. اضغط تحديث لإعادة التحميل.',
-    onReload: () => location.reload(),
-    onClose: () => toast.dismiss(t.id),
+    onReload: () => {
+      location.reload();
+    },
+    onClose: () => {
+      toast.dismiss(t.id);
+    },
   }), {
-    duration: 30000, // 30 ثانية
+    duration: 30000,
     position: 'bottom-left',
   });
 }
@@ -79,12 +87,20 @@ function showActionToast(message: string, actionLabel: string, actionOnClick: ()
 (window as any).showUpdateToast = showUpdateToast;
 (window as any).showActionToast = showActionToast;
 
-// منطق الخمول: يظهر التنبيه بعد 30 ثانية من عدم النشاط
+// منطق الخمول
 let lastActivity = Date.now();
 let idleToastShown = false;
-const IDLE_DELAY = 30000; // 30 ثانية
+const IDLE_DELAY = 30000;
 
-function resetActivity() {
+function isInsideToast(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  return !!target.closest('.pwa-toast-wrapper');
+}
+
+function resetActivity(e: Event) {
+  // إذا كان الحدث من داخل التنبيه، لا نعيد ضبط النشاط ولا نغلق التنبيه
+  if (isInsideToast(e.target)) return;
+
   lastActivity = Date.now();
   if (idleToastShown) {
     toast.dismiss();
