@@ -1,31 +1,60 @@
-/* ===== النافذة المنبثقة ===== */
-.lgnBottomSheet { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 20; visibility: hidden; opacity: 0; transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s); pointer-events: none; }
-.lgnBottomSheet.visible { visibility: visible; opacity: 1; pointer-events: auto; }
-.lgnOverlay { position: fixed; inset: 0; background: rgba(0,0,0,.3); -webkit-backdrop-filter: saturate(180%) blur(10px); backdrop-filter: saturate(180%) blur(10px); visibility: hidden; opacity: 0; transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s); cursor: pointer; z-index: 1; }
-.lgnBottomSheet.visible .lgnOverlay { visibility: visible; opacity: 1; }
+/* ===== نافذة Bottom Sheet ===== */
+.lgnBottomSheet {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-end; /* الأسفل دائمًا */
+  justify-content: center;
+  z-index: 20;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s);
+  pointer-events: none;
+}
+.lgnBottomSheet.visible {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+.lgnOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.3);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  backdrop-filter: saturate(180%) blur(10px);
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s);
+  cursor: pointer;
+  z-index: 1;
+}
+.lgnBottomSheet.visible .lgnOverlay {
+  visibility: visible;
+  opacity: 1;
+}
 
-/* ===== نافذة ثابتة الارتفاع، رأس ثابت، محتوى قابل للتمرير ===== */
+/* النافذة تنزلق من الأسفل */
 .lgnSheet {
   display: flex;
   flex-direction: column;
-  width: 375px;
-  max-width: 90vw;
-  height: min(600px, calc(100vh - 140px)); /* ارتفاع ثابت */
-  max-height: calc(100vh - 120px);
+  width: 100%;
+  max-width: 375px;
+  height: min(600px, calc(100vh - 80px));
+  max-height: calc(100vh - 60px);
   background: var(--contentB);
-  border-radius: 10px;
-  border: 1px solid var(--contentL);
-  box-shadow: 0 10px 25px -3px rgba(0,0,0,.07);
-  transform: scale(0.8);
-  transform-origin: center;
-  transition: var(--trans-2, 0.3s);
+  border-radius: 12px 12px 0 0;
+  border: none;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.12);
+  transform: translateY(100%);
+  transition: transform var(--trans-2, 0.3s);
   overflow: hidden;
   position: relative;
   z-index: 2;
-  margin: auto;
+  margin: 0 auto;
 }
-.lgnBottomSheet.visible .lgnSheet { transform: scale(1); }
-
+.lgnBottomSheet.visible .lgnSheet {
+  transform: translateY(0);
+}
 .lgnHeader {
   flex-shrink: 0;
   display: flex;
@@ -34,14 +63,31 @@
   padding: 14px 16px;
   border-bottom: 1px solid var(--contentL);
   background: var(--contentB);
-  z-index: 3; /* فوق المحتوى */
+  z-index: 2;
 }
-.lgnHeader h3 { margin: 0; font-size: .9rem; font-weight: 600; color: var(--headC); }
-.lgnClose { background: 0; border: 0; cursor: pointer; padding: 2px; color: var(--bodyCa); display: flex; align-items: center; flex-direction: row-reverse; gap: 4px; border-radius: 50%; transition: background .2s; }
+.lgnHeader h3 {
+  margin: 0;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--headC);
+}
+.lgnClose {
+  background: 0;
+  border: 0;
+  cursor: pointer;
+  padding: 2px;
+  color: var(--bodyCa);
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  gap: 4px;
+  border-radius: 50%;
+  transition: background .2s;
+}
 .lgnClose:hover { background: var(--transB); }
 .lgnClose svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
 
-/* ===== محتوى داخلي قابل للتمرير بشريط مخصص ===== */
+/* محتوى قابل للتمرير مع شريط مخصص */
 .lgnBody {
   flex: 1;
   min-height: 0;
@@ -49,8 +95,6 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: var(--bodyCa) transparent;
 }
 .lgnBody::-webkit-scrollbar { width: 4px; }
 .lgnBody::-webkit-scrollbar-track { background: transparent; }
@@ -59,13 +103,15 @@
 /* ===== تذييل موحد مع خط فاصل ===== */
 .sheet-footer {
   flex-shrink: 0;
-  padding: 8px 16px 12px;
+  margin-top: 12px;
+  padding-top: 8px;
+  padding-bottom: 4px;
   border-top: 1px solid var(--contentL);
   display: flex;
-  justify-content: flex-end; /* زر في الجهة اليسرى (RTL) */
+  justify-content: flex-end;
 }
 
-/* ===== زر رجوع بدون أيقونة، لون افتراضي ===== */
+/* ===== زر الرجوع بدون أيقونة ===== */
 .backBtn {
   display: inline-block;
   padding: 6px 16px;
