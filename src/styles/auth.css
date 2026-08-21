@@ -1,60 +1,58 @@
-/* ==================== طبقة الخلفية (Overlay) ==================== */
-.lgnOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.3);
-  -webkit-backdrop-filter: saturate(180%) blur(10px);
-  backdrop-filter: saturate(180%) blur(10px);
+/* ===== نافذة Bottom Sheet ===== */
+.lgnBottomSheet {
+  position: absolute;
+  top: calc(100% + (var(--headerHc, 60px) - 100%) / 2);
+  inset-inline-end: 0;
+  width: 375px;
+  max-width: 90vw;
+  display: block; /* إلغاء flex المركزي */
+  z-index: 4;
   visibility: hidden;
   opacity: 0;
   transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s);
-  cursor: pointer;
-  z-index: 3;
+  pointer-events: none;
 }
-.lgnBottomSheet.visible .lgnOverlay {
+
+.lgnBottomSheet.visible {
   visibility: visible;
   opacity: 1;
   pointer-events: auto;
 }
 
-/* ==================== الحاوية الرئيسية ==================== */
-.lgnBottomSheet {
-  position: absolute;
-  top: calc(100% + (var(--headerHc) - 100%) / 2);
-  inset-inline-end: 0;
+/* إخفاء طبقة التعتيم على سطح المكتب */
+.lgnOverlay {
+  display: none;
+}
+
+/* النافذة نفسها */
+.lgnSheet {
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - (var(--headerHc) + 40vh));
-  width: 375px;
+  width: 100%;
+  height: auto;
+  max-height: 70vh !important;
   background: var(--contentB);
   border-radius: 10px;
   border-start-end-radius: 5px;
   border: 1px solid var(--contentL);
   box-shadow: 0 10px 25px -3px rgba(0,0,0,.07);
-  visibility: hidden;
-  opacity: 0;
-  transform: scale(.8);
+  transform: scale(0.8);
   transform-origin: top right;
   transition: var(--trans-2, 0.3s);
   overflow: hidden;
-  z-index: 4;
+  position: relative;
+  z-index: 2;
 }
-.lgnBottomSheet.visible {
-  visibility: visible;
-  opacity: 1;
+
+.lgnBottomSheet.visible .lgnSheet {
   transform: scale(1);
 }
 
-/* ==================== الورقة الداخلية (Sheet) ==================== */
-.lgnSheet {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
+[dir="rtl"] .lgnSheet {
+  transform-origin: top left;
 }
 
-/* ==================== الهيدر (ثابت) ==================== */
+/* ===== الترويسة والمحتوى ===== */
 .lgnHeader {
   flex-shrink: 0;
   display: flex;
@@ -65,14 +63,16 @@
   background: var(--contentB);
   z-index: 2;
 }
+
 .lgnHeader h3 {
   margin: 0;
   font-size: .9rem;
   font-weight: 600;
   color: var(--headC);
 }
+
 .lgnClose {
-  background: none;
+  background: 0;
   border: 0;
   cursor: pointer;
   padding: 2px;
@@ -84,7 +84,11 @@
   border-radius: 50%;
   transition: background .2s;
 }
-.lgnClose:hover { background: var(--transB); }
+
+.lgnClose:hover {
+  background: var(--transB);
+}
+
 .lgnClose svg {
   width: 20px;
   height: 20px;
@@ -93,80 +97,85 @@
   fill: none;
 }
 
-/* ==================== جسم النافذة (مرن مع تمرير) ==================== */
 .lgnBody {
   flex: 1;
   min-height: 0;
-  padding: 12px 16px 8px;
+  padding: 12px 16px 16px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
 }
-.lgnBody::-webkit-scrollbar { width: 4px; }
-.lgnBody::-webkit-scrollbar-track { background: transparent; }
-.lgnBody::-webkit-scrollbar-thumb { background: var(--bodyCa, #9ca3af); border-radius: 4px; }
 
-/* ==================== التذييل (ثابت مع خط فاصل) ==================== */
-.sheet-footer {
-  flex-shrink: 0;
-  margin-top: 12px;
-  padding-top: 8px;
-  padding-bottom: 4px;
-  border-top: 1px solid var(--contentL);
-  display: flex;
-  justify-content: flex-start; /* يمين في RTL */
+.lgnBody::-webkit-scrollbar {
+  width: 4px;
 }
 
-/* ==================== زر الرجوع ==================== */
-.backBtn {
-  display: inline-block;
-  padding: 6px 16px;
-  border: none;
-  border-radius: 6px;
-  background: var(--linkB);
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 0.2s;
+.lgnBody::-webkit-scrollbar-track {
+  background: transparent;
 }
-.backBtn:hover { opacity: 0.85; }
 
-/* ==================== استجابة الجوال ==================== */
+.lgnBody::-webkit-scrollbar-thumb {
+  background: var(--bodyCa, #9ca3af);
+  border-radius: 4px;
+}
+
+/* ===== الجوال: تتحول إلى Bottom Sheet من الأسفل ===== */
 @media screen and (max-width: 500px) {
   .lgnBottomSheet {
     position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: 100%;
+    z-index: 20;
+    pointer-events: none;
+    display: block;
+  }
+
+  .lgnBottomSheet.visible {
+    pointer-events: auto;
+  }
+
+  .lgnOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.3);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    backdrop-filter: saturate(180%) blur(10px);
+    cursor: pointer;
+    z-index: 1;
+  }
+
+  .lgnSheet {
+    height: 70vh;
+    max-height: 70vh;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+    border: none;
+    transform: none;
+    transition: bottom var(--trans-2, 0.3s);
+    position: fixed;
+    bottom: -60px;
+    top: auto;
     left: 0;
     right: 0;
-    top: auto;
-    bottom: -60px;
-    border-radius: 12px 12px 0 0;
-    max-height: calc(100% - var(--headerHc, 60px));
-    width: 100%;
-    border: none;
-    transform: scale(1);
-    transition: var(--trans-2, 0.3s);
-    z-index: 20;
+    z-index: 2;
   }
-  .lgnOverlay {
-    background: rgba(0,0,0,.55);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-  }
-  .lgnBottomSheet.visible {
+
+  .lgnBottomSheet.visible .lgnSheet {
     bottom: 0;
     top: unset;
+    transform: none;
   }
+
   html:has(.lgnBottomSheet.visible) {
     overflow: hidden;
   }
 }
 
-[dir="rtl"] .lgnBottomSheet {
-  transform-origin: top left;
-}
-
-/* ==================== بطاقات الحساب والجلسات ==================== */
+/* ===== بطاقات الحساب والجلسات ===== */
 .acctCard { background: var(--contentB); border-radius: 12px; border: 1px solid var(--contentL); padding: 12px 14px; margin-bottom: 8px; }
 .acctUser { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; position: relative; }
 .acctAvatar { width: 56px; height: 56px; border-radius: 8px; border: 2px solid var(--contentL); flex-shrink: 0; overflow: hidden; background: var(--linkB); }
@@ -186,7 +195,7 @@
 .btnLogout { background: var(--linkB); color: #fff; }
 .btnRemove { background: #ef4444; color: #fff; }
 
-/* ==================== صفحة تسجيل الدخول ==================== */
+/* صفحة تسجيل الدخول */
 .guestCard { max-width: 320px; margin: 0 auto; padding: 8px 0; }
 .guestCard .gTitle { font-size: 1.1rem; font-weight: 700; color: var(--headC); text-align: center; margin: 0 0 2px; }
 .guestCard .gSub { font-size: .8rem; color: var(--bodyCa); text-align: center; margin: 0 0 16px; }
@@ -206,7 +215,7 @@
 .guestCard .gSecured { text-align: center; font-size: .65rem; color: var(--bodyCa); margin-top: 10px; opacity: .7; }
 .guestCard .gSecured span { color: var(--linkC); font-weight: 500; }
 
-/* ==================== لوحة الإعدادات ==================== */
+/* لوحة الإعدادات */
 .settingsTrigger { position: absolute; top: 8px; inset-inline-end: 8px; background: none; border: 1px solid var(--contentL); border-radius: 8px; padding: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--bodyC); transition: background .2s, border-color .2s; }
 .settingsTrigger:hover { background: var(--bodyB); border-color: var(--bodyCa); }
 .settingsTrigger svg { width: 18px; height: 18px; stroke: currentColor; fill: none; }
@@ -219,7 +228,7 @@
 .editPanel .button.primary { display: block; width: 100%; padding: 7px 12px; border: none; border-radius: 6px; background: var(--linkB); color: #fff; font-size: .75rem; font-weight: 500; cursor: pointer; transition: opacity .2s; text-align: center; }
 .editPanel .button.primary:hover { opacity: .9; }
 
-/* ==================== الأعضاء ==================== */
+/* الأعضاء */
 .memberItem { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--bodyB); border-radius: 8px; border: 1px solid var(--contentL); margin-bottom: 6px; cursor: pointer; transition: all .2s; }
 .memberItem:hover { background: var(--contentBs); border-color: var(--linkC); }
 .memberItem .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--contentL); flex-shrink: 0; overflow: hidden; background: var(--linkB); }
@@ -230,7 +239,7 @@
 .memberItem .status.online { color: #22c55e; }
 .memberItem .status.offline { color: #94a3b8; }
 
-/* ==================== الملف الشخصي ==================== */
+/* الملف الشخصي */
 .profileView { text-align: center; padding: 10px 0; }
 .profileView .avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--contentL); margin: 0 auto 12px; overflow: hidden; background: var(--linkB); }
 .profileView .avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -238,7 +247,32 @@
 .profileView .email { font-size: .8rem; color: var(--bodyCa); margin: 0 0 2px; }
 .profileView .joinDate { font-size: .7rem; color: var(--bodyCa); opacity: .7; }
 
-/* ==================== الإحصائيات ==================== */
+/* زر الرجوع الموحد */
+.backBtn {
+  display: inline-block;
+  padding: 6px 16px;
+  border: none;
+  border-radius: 6px;
+  background: var(--linkB);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.backBtn:hover { opacity: 0.85; }
+
+/* تذييل موحد مع خط فاصل وزر في الجهة اليمنى */
+.sheet-footer {
+  flex-shrink: 0;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--contentL);
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* الإحصائيات */
 .statsGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
 .statCard { display: flex; align-items: center; gap: 8px; background: var(--bodyB); border: 1px solid var(--contentL); border-radius: 8px; padding: 10px 12px; min-height: 56px; box-sizing: border-box; overflow: hidden; }
 .statIcon { display: flex; align-items: center; justify-content: center; color: var(--linkB); flex-shrink: 0; }

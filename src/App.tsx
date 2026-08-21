@@ -17,19 +17,14 @@ const sheetTitles: Record<string, string> = {
 
 export function App() {
   createEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
     if (authStore.isSheetOpen()) {
-      html.style.overflow = 'hidden';
-      body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
     } else {
-      html.style.overflow = '';
-      body.style.overflow = '';
+      document.body.style.overflow = '';
     }
   });
 
   onCleanup(() => {
-    document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
   });
 
