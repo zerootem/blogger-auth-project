@@ -3,7 +3,7 @@
   position: fixed;
   inset: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-end; /* الأسفل دائمًا */
   justify-content: center;
   z-index: 20;
   visibility: hidden;
@@ -33,30 +33,28 @@
   opacity: 1;
 }
 
-/* النافذة: ارتفاع ثابت دائمًا، لا يتغير عند فتح الإعدادات */
+/* النافذة تنزلق من الأسفل، ارتفاع ثابت */
 .lgnSheet {
   display: flex;
   flex-direction: column;
   width: 375px;
-  max-width: 90vw;
-  height: 50vh; /* نصف الشاشة دائمًا */
-  max-height: 60vh; /* لا يتجاوز 60% */
+  max-width: 100%;
+  height: 50vh; /* نصف الشاشة */
+  max-height: 60vh;
   background: var(--contentB);
-  border-radius: 16px;
-  border: 1px solid var(--contentL);
-  box-shadow: 0 10px 25px -3px rgba(0,0,0,.07);
-  transform: scale(0.8);
-  transform-origin: center;
-  transition: var(--trans-2, 0.3s);
+  border-radius: 16px 16px 0 0;
+  border: none;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.12);
+  transform: translateY(100%);
+  transition: transform var(--trans-2, 0.3s);
   overflow: hidden;
   position: relative;
   z-index: 2;
-  margin: auto;
+  margin: 0 auto;
 }
 .lgnBottomSheet.visible .lgnSheet {
-  transform: scale(1);
+  transform: translateY(0);
 }
-/* الهيدر ثابت لا يتحرك */
 .lgnHeader {
   flex-shrink: 0;
   display: flex;
@@ -89,7 +87,7 @@
 .lgnClose:hover { background: var(--transB); }
 .lgnClose svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
 
-/* المحتوى يمرر داخليًا ولا يغير ارتفاع النافذة */
+/* محتوى قابل للتمرير، لا يغير ارتفاع النافذة */
 .lgnBody {
   flex: 1;
   min-height: 0;
@@ -102,7 +100,7 @@
 .lgnBody::-webkit-scrollbar-track { background: transparent; }
 .lgnBody::-webkit-scrollbar-thumb { background: var(--bodyCa, #9ca3af); border-radius: 4px; }
 
-/* ===== تذييل موحد مع خط فاصل ===== */
+/* تذييل موحد */
 .sheet-footer {
   flex-shrink: 0;
   margin-top: 8px;
@@ -110,10 +108,10 @@
   padding-bottom: 4px;
   border-top: 1px solid var(--contentL);
   display: flex;
-  justify-content: flex-end; /* نقل الزر للجهة الأخرى */
+  justify-content: flex-end;
 }
 
-/* زر رجوع بدون أيقونة، بلون افتراضي */
+/* زر رجوع بدون أيقونة بلون افتراضي */
 .backBtn {
   display: inline-block;
   padding: 6px 16px;
