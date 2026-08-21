@@ -1,61 +1,49 @@
-/* ===== نافذة Bottom Sheet ===== */
+/* Bottom Sheet */
 .lgnBottomSheet {
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  top: calc(100% + (var(--headerHc) - 100%) / 2);
+  inset-inline-end: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 20;
+  max-height: calc(100vh - (var(--headerHc) + 40vh));
+  width: 375px;
+  background: var(--contentB);
+  border-radius: 10px;
+  border-start-end-radius: 5px;
+  border: 1px solid var(--contentL);
   visibility: hidden;
   opacity: 0;
-  transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s);
-  pointer-events: none;
+  transform: scale(.8);
+  transform-origin: top right;
+  transition: var(--trans-2);
+  overflow: hidden;
+  z-index: 4;
 }
+
 .lgnBottomSheet.visible {
+  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.lgnOverlay {
+  transition: var(--trans-2);
+  z-index: 3;
+}
+
+.lgnBottomSheet.visible .lgnOverlay {
   visibility: visible;
   opacity: 1;
   pointer-events: auto;
 }
-.lgnOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.3);
-  -webkit-backdrop-filter: saturate(180%) blur(10px);
-  backdrop-filter: saturate(180%) blur(10px);
-  visibility: hidden;
-  opacity: 0;
-  transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s);
-  cursor: pointer;
-  z-index: 1;
-}
-.lgnBottomSheet.visible .lgnOverlay {
-  visibility: visible;
-  opacity: 1;
-}
 
-/* نافذة ثابتة الارتفاع نصف الشاشة */
 .lgnSheet {
   display: flex;
   flex-direction: column;
-  width: 375px;
-  max-width: 90vw;
-  height: 50vh;                 /* نصف الشاشة دائمًا */
-  max-height: calc(100vh - 120px);
-  background: var(--contentB);
-  border-radius: 10px;
-  border: 1px solid var(--contentL);
-  box-shadow: 0 10px 25px -3px rgba(0,0,0,.07);
-  transform: scale(0.8);
-  transform-origin: center;
-  transition: var(--trans-2, 0.3s);
-  overflow: hidden;
-  position: relative;
-  z-index: 2;
-  margin: auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
 }
-.lgnBottomSheet.visible .lgnSheet {
-  transform: scale(1);
-}
+
 .lgnHeader {
   flex-shrink: 0;
   display: flex;
@@ -66,12 +54,14 @@
   background: var(--contentB);
   z-index: 2;
 }
+
 .lgnHeader h3 {
   margin: 0;
   font-size: .9rem;
   font-weight: 600;
   color: var(--headC);
 }
+
 .lgnClose {
   background: 0;
   border: 0;
@@ -85,9 +75,11 @@
   border-radius: 50%;
   transition: background .2s;
 }
+
 .lgnClose:hover {
   background: var(--transB);
 }
+
 .lgnClose svg {
   width: 20px;
   height: 20px;
@@ -95,41 +87,69 @@
   stroke-width: 2;
   fill: none;
 }
+
 .lgnBody {
   flex: 1;
   min-height: 0;
   padding: 12px 16px 16px;
-  overflow-y: auto;               /* تمرير داخلي */
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
 }
-.lgnBody::-webkit-scrollbar { width: 4px; }
-.lgnBody::-webkit-scrollbar-track { background: transparent; }
-.lgnBody::-webkit-scrollbar-thumb { background: var(--bodyCa, #9ca3af); border-radius: 4px; }
 
-/* الجوال: يظهر من الأسفل بارتفاع نصف الشاشة */
+.lgnBody::-webkit-scrollbar {
+  width: 4px;
+}
+
+.lgnBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.lgnBody::-webkit-scrollbar-thumb {
+  background: var(--bodyCa, #9ca3af);
+  border-radius: 4px;
+}
+
+[dir="rtl"] .lgnBottomSheet {
+  transform-origin: top left;
+}
+
+/* Dark mode shadow */
+.lgnBottomSheet {
+  box-shadow: 0 10px 25px -3px rgba(0,0,0,.07);
+}
+
+/* Mobile responsive */
 @media screen and (max-width: 500px) {
-  .lgnBottomSheet { align-items: flex-end; }
-  .lgnSheet {
-    height: 50vh;                 /* ثابت أيضًا على الجوال */
-    max-height: calc(100vh - 60px);
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    border-radius: 12px 12px 0 0;
-    border: none;
-    transform: none;
-    transition: var(--trans-2, 0.3s);
+  .lgnBottomSheet {
     position: fixed;
-    bottom: -60px;
-    top: auto;
     left: 0;
     right: 0;
+    top: auto;
+    bottom: -60px;
+    border-radius: 12px 12px 0 0;
+    max-height: calc(100% - var(--headerHc));
+    width: 100%;
+    border: none;
+    transform: scale(1);
+    transition: var(--trans-2);
+    z-index: 20;
   }
-  .lgnBottomSheet.visible .lgnSheet { bottom: 0; top: unset; transform: none; }
+  
+  .lgnOverlay {
+    background: rgba(0,0,0,.3);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    backdrop-filter: saturate(180%) blur(10px);
+  }
+  
+  .lgnBottomSheet.visible {
+    bottom: 0;
+    top: unset;
+  }
+  
+  html:has(.lgnBottomSheet.visible) {
+    overflow: hidden;
+  }
 }
-
-[dir="rtl"] .lgnSheet { transform-origin: center; }
 
 /* ===== بطاقات الحساب والجلسات ===== */
 .acctCard { background: var(--contentB); border-radius: 12px; border: 1px solid var(--contentL); padding: 12px 14px; margin-bottom: 8px; }
@@ -218,14 +238,14 @@
 }
 .backBtn:hover { opacity: 0.85; }
 
-/* تذييل موحد مع خط فاصل وزر في الجهة اليمنى */
+/* تذييل موحد مع خط فاصل */
 .sheet-footer {
   flex-shrink: 0;
   margin-top: 16px;
   padding-top: 12px;
   border-top: 1px solid var(--contentL);
   display: flex;
-  justify-content: flex-start;  /* يمين في RTL */
+  justify-content: flex-start;
 }
 
 /* الإحصائيات */
