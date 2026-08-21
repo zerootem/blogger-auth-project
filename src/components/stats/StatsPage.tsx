@@ -5,43 +5,22 @@ import { toastService } from '@/services/toast.service';
 import { authStore } from '@/stores/auth.store';
 
 const LoginIcon = () => (
-  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
-    <path d="M11.68 14.62L14.24 12.06 11.68 9.5" />
-    <path d="M4 12.06h10.17" />
-    <path d="M12 4c4.42 0 8 3 8 8s-3.58 8-8 8" />
-  </svg>
+  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M11.68 14.62L14.24 12.06 11.68 9.5"/><path d="M4 12.06h10.17"/><path d="M12 4c4.42 0 8 3 8 8s-3.58 8-8 8"/></svg>
 );
 const TimerIcon = () => (
-  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
-    <circle cx="12" cy="12" r="9" />
-    <path d="M12 7v5l3 3" />
-  </svg>
+  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
 );
 const ArticleIcon = () => (
-  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
-    <path d="M4 19.5v-15A2.5 2.5 0 016.5 2H20v20H6.5a2.5 2.5 0 01-2.5-2.5z" />
-    <path d="M8 7h6" />
-    <path d="M8 11h4" />
-  </svg>
+  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 19.5v-15A2.5 2.5 0 016.5 2H20v20H6.5a2.5 2.5 0 01-2.5-2.5z"/><path d="M8 7h6"/><path d="M8 11h4"/></svg>
 );
 const ProductIcon = () => (
-  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
-    <path d="M21 8l-9-5-9 5v8l9 5 9-5V8z" />
-    <path d="M3 8l9 5 9-5" />
-    <path d="M12 13v8" />
-  </svg>
+  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg>
 );
 const MailIcon = () => (
-  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
-    <rect x="2" y="4" width="20" height="16" rx="2" />
-    <path d="M22 4l-10 8L2 4" />
-  </svg>
+  <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4l-10 8L2 4"/></svg>
 );
 const BackIcon = () => (
-  <svg class="line" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
-    <path d="M16.8701 18.3101H8.87012C6.11012 18.3101 3.87012 16.0701 3.87012 13.3101C3.87012 10.5501 6.11012 8.31006 8.87012 8.31006H19.8701" stroke-miterlimit="10" />
-    <path d="M17.5701 10.8099L20.1301 8.24994L17.5701 5.68994" />
-  </svg>
+  <svg class="line" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M9.57 5.92993L3.5 11.9999L9.57 18.0699" stroke-miterlimit="10"/><path d="M20.5 12H3.67004" stroke-miterlimit="10"/></svg>
 );
 
 export function StatsPage() {
@@ -86,7 +65,7 @@ export function StatsPage() {
   };
 
   return (
-    <div style="padding:4px 0">
+    <div style="padding:4px 0; display:flex; flex-direction:column; min-height:100%;">
       <div class="statsGrid">
         <div class="statCard"><div class="statIcon"><LoginIcon /></div><div class="statInfo"><div class="statValue">{loginCount()}</div><div class="statLabel">دخول</div></div></div>
         <div class="statCard"><div class="statIcon"><TimerIcon /></div><div class="statInfo"><div class="statValue">{sessionDuration()}</div><div class="statLabel">الجلسة</div></div></div>
@@ -105,7 +84,7 @@ export function StatsPage() {
         <button class="contactBtn" onClick={sendMessage}>إرسال</button>
       </div>
 
-      <div class="sheetFooter">
+      <div class="sheet-footer">
         <button onClick={() => authStore.openSheet('dashboard')} class="backBtn"><BackIcon /> الرجوع للوحة</button>
       </div>
     </div>

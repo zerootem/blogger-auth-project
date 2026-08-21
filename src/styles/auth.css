@@ -1,17 +1,140 @@
 /* ===== نافذة Bottom Sheet ===== */
-.lgnBottomSheet { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 20; visibility: hidden; opacity: 0; transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s); pointer-events: none; }
-.lgnBottomSheet.visible { visibility: visible; opacity: 1; pointer-events: auto; }
-.lgnOverlay { position: fixed; inset: 0; background: rgba(0,0,0,.3); -webkit-backdrop-filter: saturate(180%) blur(10px); backdrop-filter: saturate(180%) blur(10px); visibility: hidden; opacity: 0; transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s); cursor: pointer; z-index: 1; }
-.lgnBottomSheet.visible .lgnOverlay { visibility: visible; opacity: 1; }
-.lgnSheet { width: 375px; max-width: 90vw; background: var(--contentB); border-radius: 10px; border: 1px solid var(--contentL); box-shadow: 0 10px 25px -3px rgba(0,0,0,.07); transform: scale(0.8); transform-origin: center; transition: var(--trans-2, 0.3s); overflow: hidden; position: relative; z-index: 2; margin: auto; }
-.lgnBottomSheet.visible .lgnSheet { transform: scale(1); }
-.lgnHeader { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--contentL); }
-.lgnHeader h3 { margin: 0; font-size: .9rem; font-weight: 600; color: var(--headC); }
-.lgnClose { background: 0; border: 0; cursor: pointer; padding: 2px; color: var(--bodyCa); display: flex; align-items: center; flex-direction: row-reverse; gap: 4px; border-radius: 50%; transition: background .2s; }
-.lgnClose:hover { background: var(--transB); }
-.lgnClose svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
-.lgnBody { padding: 12px 16px 16px; overflow-y: auto; max-height: calc(100vh - 120px); }
-@media screen and (max-width: 500px) { .lgnBottomSheet { align-items: flex-end; } .lgnSheet { width: 100%; max-width: 100%; margin: 0; border-radius: 12px 12px 0 0; border: none; transform: none; transition: var(--trans-2, 0.3s); position: fixed; bottom: -60px; top: auto; left: 0; right: 0; } .lgnBottomSheet.visible .lgnSheet { bottom: 0; top: unset; transform: none; } }
+.lgnBottomSheet {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s);
+  pointer-events: none;
+}
+.lgnBottomSheet.visible {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+.lgnOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.3);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  backdrop-filter: saturate(180%) blur(10px);
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s);
+  cursor: pointer;
+  z-index: 1;
+}
+.lgnBottomSheet.visible .lgnOverlay {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* نافذة مستقرة الارتفاع، رأس ثابت، محتوى قابل للتمرير */
+.lgnSheet {
+  display: flex;
+  flex-direction: column;
+  width: 375px;
+  max-width: 90vw;
+  height: min(600px, calc(100vh - 140px));
+  max-height: calc(100vh - 120px);
+  background: var(--contentB);
+  border-radius: 10px;
+  border: 1px solid var(--contentL);
+  box-shadow: 0 10px 25px -3px rgba(0,0,0,.07);
+  transform: scale(0.8);
+  transform-origin: center;
+  transition: var(--trans-2, 0.3s);
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+  margin: auto;
+}
+.lgnBottomSheet.visible .lgnSheet {
+  transform: scale(1);
+}
+.lgnHeader {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--contentL);
+}
+.lgnHeader h3 {
+  margin: 0;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--headC);
+}
+.lgnClose {
+  background: 0;
+  border: 0;
+  cursor: pointer;
+  padding: 2px;
+  color: var(--bodyCa);
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  gap: 4px;
+  border-radius: 50%;
+  transition: background .2s;
+}
+.lgnClose:hover {
+  background: var(--transB);
+}
+.lgnClose svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+.lgnBody {
+  flex: 1;
+  min-height: 0;
+  padding: 12px 16px 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+/* شريط تمرير داخلي احترافي */
+.lgnBody::-webkit-scrollbar {
+  width: 4px;
+}
+.lgnBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+.lgnBody::-webkit-scrollbar-thumb {
+  background: var(--bodyCa, #9ca3af);
+  border-radius: 4px;
+}
+
+/* الجوال: Bottom Sheet */
+@media screen and (max-width: 500px) {
+  .lgnBottomSheet { align-items: flex-end; }
+  .lgnSheet {
+    height: auto;
+    max-height: calc(100vh - 60px);
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+    border: none;
+    transform: none;
+    transition: var(--trans-2, 0.3s);
+    position: fixed;
+    bottom: -60px;
+    top: auto;
+    left: 0;
+    right: 0;
+  }
+  .lgnBottomSheet.visible .lgnSheet { bottom: 0; top: unset; transform: none; }
+}
+
 [dir="rtl"] .lgnSheet { transform-origin: center; }
 
 /* ===== بطاقات الحساب والجلسات ===== */
@@ -85,57 +208,6 @@
 .profileView .name { font-size: 1.1rem; font-weight: 700; color: var(--headC); margin: 0 0 4px; }
 .profileView .email { font-size: .8rem; color: var(--bodyCa); margin: 0 0 2px; }
 .profileView .joinDate { font-size: .7rem; color: var(--bodyCa); opacity: .7; }
-.profileView .btnBack { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border: 1px solid var(--contentL); border-radius: 8px; font-size: .75rem; color: var(--bodyC); background: transparent; cursor: pointer; margin-top: 12px; transition: all .2s; }
-.profileView .btnBack:hover { background: var(--transB); }
-
-/* زر الرجوع الموحد */
-.backBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 18px;
-  border: none;
-  border-radius: 6px;
-  background: var(--linkB);
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  text-align: center;
-  margin: 0 auto;
-}
-.backBtn:hover { opacity: 0.85; }
-
-/* الإحصائيات */
-.statsGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
-.statCard { display: flex; align-items: center; gap: 8px; background: var(--bodyB); border: 1px solid var(--contentL); border-radius: 8px; padding: 10px 12px; min-height: 56px; box-sizing: border-box; overflow: hidden; }
-.statIcon { display: flex; align-items: center; justify-content: center; color: var(--linkB); flex-shrink: 0; }
-.statInfo { flex: 1; min-width: 0; overflow: hidden; }
-.statValue { font-size: 0.9rem; font-weight: 600; color: var(--headC); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.statLabel { font-size: 0.6rem; color: var(--bodyCa); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.statLink { font-size: 0.7rem; font-weight: 500; color: var(--linkC); text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 100%; }
-.statLink:hover { text-decoration: underline; }
-
-.chartContainer { background: var(--bodyB); border: 1px solid var(--contentL); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
-.chartTitle { font-size: 0.7rem; font-weight: 600; color: var(--headC); margin-bottom: 10px; text-align: center; }
-.chartBars { display: flex; align-items: flex-end; justify-content: space-around; height: 70px; padding: 0 4px; }
-.chartBarItem { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.chartBar { width: 20px; background: var(--linkB); border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.3s; }
-.chartLabel { font-size: 0.55rem; color: var(--bodyCa); text-align: center; }
-
-.contactForm { background: var(--bodyB); border: 1px solid var(--contentL); border-radius: 8px; padding: 12px; margin-bottom: 8px; text-align: center; }
-.contactInput { width: 100%; padding: 8px; border: 1px solid var(--contentL); border-radius: 6px; font-size: 0.7rem; background: var(--contentB); color: var(--bodyC); margin: 8px 0; resize: vertical; box-sizing: border-box; outline: none; }
-.contactInput:focus { border-color: var(--linkC); }
-.contactBtn { display: inline-block; width: auto; padding: 6px 18px; border: 0; border-radius: 6px; background: var(--linkB); color: #fff; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: opacity 0.2s; text-align: center; margin: 0 auto; }
-.contactBtn:hover { opacity: 0.85; }
-
-/* تحسين تمرير محتوى النافذة */
-.lgnBody {
-  overflow-y: auto;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
 
 /* زر الرجوع الموحد */
 .backBtn {
@@ -163,71 +235,40 @@
   fill: none;
 }
 
-/* ===== تثبيت ارتفاع النافذة ===== */
-.lgnSheet {
-  display: flex;
-  flex-direction: column;
-  height: auto;
-  max-height: min(600px, calc(100vh - 120px)); /* ارتفاع ثابت معقول */
-  overflow: hidden;
-}
-.lgnHeader {
+/* تذييل موحد مع خط فاصل */
+.sheet-footer {
   flex-shrink: 0;
-}
-.lgnBody {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-}
-/* شريط تمرير احترافي */
-.lgnBody::-webkit-scrollbar {
-  width: 5px;
-}
-.lgnBody::-webkit-scrollbar-track {
-  background: transparent;
-}
-.lgnBody::-webkit-scrollbar-thumb {
-  background: var(--bodyCa, #9ca3af);
-  border-radius: 8px;
-}
-.lgnBody::-webkit-scrollbar-thumb:hover {
-  background: var(--bodyC, #6b7280);
-}
-
-/* ===== الفواصل في التذييل ===== */
-.sheetFooter {
-  border-top: 1px solid var(--contentL, #e5e7eb);
   margin-top: 16px;
   padding-top: 12px;
+  border-top: 1px solid var(--contentL);
   display: flex;
-  justify-content: flex-start; /* محاذاة لليمين في RTL */
-  gap: 8px;
+  justify-content: flex-start;
+}
+.sheet-divider {
+  border: none;
+  border-top: 1px solid var(--contentL);
+  margin: 16px 0 0;
 }
 
-/* ===== زر الرجوع الموحد ===== */
-.backBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid var(--contentL, #e5e7eb);
-  border-radius: 6px;
-  background: var(--contentB, #fff);
-  color: var(--bodyC, #374151);
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-}
-.backBtn:hover {
-  background: var(--bodyB, #f3f4f6);
-  border-color: var(--bodyCa, #9ca3af);
-}
-.backBtn svg {
-  width: 16px;
-  height: 16px;
-  stroke: currentColor;
-  fill: none;
-  flex-shrink: 0;
-}
+/* الإحصائيات */
+.statsGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+.statCard { display: flex; align-items: center; gap: 8px; background: var(--bodyB); border: 1px solid var(--contentL); border-radius: 8px; padding: 10px 12px; min-height: 56px; box-sizing: border-box; overflow: hidden; }
+.statIcon { display: flex; align-items: center; justify-content: center; color: var(--linkB); flex-shrink: 0; }
+.statInfo { flex: 1; min-width: 0; overflow: hidden; }
+.statValue { font-size: 0.9rem; font-weight: 600; color: var(--headC); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.statLabel { font-size: 0.6rem; color: var(--bodyCa); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.statLink { font-size: 0.7rem; font-weight: 500; color: var(--linkC); text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 100%; }
+.statLink:hover { text-decoration: underline; }
+
+.chartContainer { background: var(--bodyB); border: 1px solid var(--contentL); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+.chartTitle { font-size: 0.7rem; font-weight: 600; color: var(--headC); margin-bottom: 10px; text-align: center; }
+.chartBars { display: flex; align-items: flex-end; justify-content: space-around; height: 70px; padding: 0 4px; }
+.chartBarItem { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.chartBar { width: 20px; background: var(--linkB); border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.3s; }
+.chartLabel { font-size: 0.55rem; color: var(--bodyCa); text-align: center; }
+
+.contactForm { background: var(--bodyB); border: 1px solid var(--contentL); border-radius: 8px; padding: 12px; margin-bottom: 8px; text-align: center; }
+.contactInput { width: 100%; padding: 8px; border: 1px solid var(--contentL); border-radius: 6px; font-size: 0.7rem; background: var(--contentB); color: var(--bodyC); margin: 8px 0; resize: vertical; box-sizing: border-box; outline: none; }
+.contactInput:focus { border-color: var(--linkC); }
+.contactBtn { display: inline-block; width: auto; padding: 6px 18px; border: 0; border-radius: 6px; background: var(--linkB); color: #fff; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: opacity 0.2s; text-align: center; margin: 0 auto; }
+.contactBtn:hover { opacity: 0.85; }

@@ -17,6 +17,7 @@ const CloseIcon = () => h('svg', {
 
 const CustomToast = defineComponent({
   props: {
+    title: { type: String, default: 'تحديث متوفر' },
     message: { type: String, default: '' },
     onReload: { type: Function, default: () => {} },
     onClose: { type: Function, default: () => {} },
@@ -24,6 +25,7 @@ const CustomToast = defineComponent({
   setup(props) {
     return () => h('div', { class: 'pwa-toast-wrapper', role: 'alert' }, [
       h('div', { class: 'pwa-toast-message' }, [
+        h('div', { class: 'pwa-toast-title' }, props.title),
         h('div', { class: 'pwa-toast-desc' }, props.message),
       ]),
       h('div', { class: 'pwa-toast-buttons' }, [
@@ -66,6 +68,7 @@ app.mount(container);
 
 function showUpdateToast() {
   toast.custom((t) => h(CustomToast, {
+    title: 'تحديث متوفر',
     message: 'يوجد تحديث جديد، اضغط تحديث لإعادة تحميل الصفحة.',
     onReload: () => location.reload(),
     onClose: () => toast.dismiss(t.id),
