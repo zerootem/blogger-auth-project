@@ -33,13 +33,13 @@
   opacity: 1;
 }
 
-/* نافذة مستقرة الارتفاع، رأس ثابت، محتوى قابل للتمرير */
+/* ===== النافذة ذات الارتفاع الثابت والهيدر الثابت ===== */
 .lgnSheet {
   display: flex;
   flex-direction: column;
   width: 375px;
   max-width: 90vw;
-  height: min(600px, calc(100vh - 140px));
+  height: min(600px, calc(100vh - 140px)); /* ارتفاع ثابت */
   max-height: calc(100vh - 120px);
   background: var(--contentB);
   border-radius: 10px;
@@ -63,6 +63,8 @@
   justify-content: space-between;
   padding: 14px 16px;
   border-bottom: 1px solid var(--contentL);
+  background: var(--contentB);
+  z-index: 2;
 }
 .lgnHeader h3 {
   margin: 0;
@@ -83,59 +85,47 @@
   border-radius: 50%;
   transition: background .2s;
 }
-.lgnClose:hover {
-  background: var(--transB);
-}
-.lgnClose svg {
-  width: 20px;
-  height: 20px;
-  stroke: currentColor;
-  stroke-width: 2;
-  fill: none;
-}
+.lgnClose:hover { background: var(--transB); }
+.lgnClose svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+/* ===== محتوى قابل للتمرير مع شريط مخصص ===== */
 .lgnBody {
   flex: 1;
   min-height: 0;
-  padding: 12px 16px 16px;
+  padding: 12px 16px 8px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
 }
-/* شريط تمرير داخلي احترافي */
-.lgnBody::-webkit-scrollbar {
-  width: 4px;
-}
-.lgnBody::-webkit-scrollbar-track {
-  background: transparent;
-}
-.lgnBody::-webkit-scrollbar-thumb {
-  background: var(--bodyCa, #9ca3af);
-  border-radius: 4px;
+.lgnBody::-webkit-scrollbar { width: 4px; }
+.lgnBody::-webkit-scrollbar-track { background: transparent; }
+.lgnBody::-webkit-scrollbar-thumb { background: var(--bodyCa, #9ca3af); border-radius: 4px; }
+
+/* ===== تذييل موحد مع خط فاصل ===== */
+.sheet-footer {
+  flex-shrink: 0;
+  margin-top: 12px;
+  padding-top: 8px;
+  padding-bottom: 4px;
+  border-top: 1px solid var(--contentL);
+  display: flex;
+  justify-content: flex-end; /* زر الرجوع في الجهة اليسرى (RTL) */
 }
 
-/* الجوال: Bottom Sheet */
-@media screen and (max-width: 500px) {
-  .lgnBottomSheet { align-items: flex-end; }
-  .lgnSheet {
-    height: auto;
-    max-height: calc(100vh - 60px);
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    border-radius: 12px 12px 0 0;
-    border: none;
-    transform: none;
-    transition: var(--trans-2, 0.3s);
-    position: fixed;
-    bottom: -60px;
-    top: auto;
-    left: 0;
-    right: 0;
-  }
-  .lgnBottomSheet.visible .lgnSheet { bottom: 0; top: unset; transform: none; }
+/* ===== زر الرجوع بدون أيقونة ===== */
+.backBtn {
+  display: inline-block;
+  padding: 6px 16px;
+  border: none;
+  border-radius: 6px;
+  background: var(--linkB);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
 }
-
-[dir="rtl"] .lgnSheet { transform-origin: center; }
+.backBtn:hover { opacity: 0.85; }
 
 /* ===== بطاقات الحساب والجلسات ===== */
 .acctCard { background: var(--contentB); border-radius: 12px; border: 1px solid var(--contentL); padding: 12px 14px; margin-bottom: 8px; }
@@ -208,47 +198,6 @@
 .profileView .name { font-size: 1.1rem; font-weight: 700; color: var(--headC); margin: 0 0 4px; }
 .profileView .email { font-size: .8rem; color: var(--bodyCa); margin: 0 0 2px; }
 .profileView .joinDate { font-size: .7rem; color: var(--bodyCa); opacity: .7; }
-
-/* زر الرجوع الموحد */
-.backBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border: 1px solid var(--contentL);
-  border-radius: 6px;
-  background: var(--contentB);
-  color: var(--bodyC);
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-}
-.backBtn:hover {
-  background: var(--bodyB);
-  border-color: var(--bodyCa);
-}
-.backBtn svg {
-  width: 16px;
-  height: 16px;
-  stroke: currentColor;
-  fill: none;
-}
-
-/* تذييل موحد مع خط فاصل */
-.sheet-footer {
-  flex-shrink: 0;
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid var(--contentL);
-  display: flex;
-  justify-content: flex-start;
-}
-.sheet-divider {
-  border: none;
-  border-top: 1px solid var(--contentL);
-  margin: 16px 0 0;
-}
 
 /* الإحصائيات */
 .statsGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
