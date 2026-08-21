@@ -1,39 +1,10 @@
-/* ===== نافذة Bottom Sheet ===== */
-.lgnBottomSheet {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 20;
-  visibility: hidden;
-  opacity: 0;
-  transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s);
-  pointer-events: none;
-}
-.lgnBottomSheet.visible {
-  visibility: visible;
-  opacity: 1;
-  pointer-events: auto;
-}
-.lgnOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.3);
-  -webkit-backdrop-filter: saturate(180%) blur(10px);
-  backdrop-filter: saturate(180%) blur(10px);
-  visibility: hidden;
-  opacity: 0;
-  transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s);
-  cursor: pointer;
-  z-index: 1;
-}
-.lgnBottomSheet.visible .lgnOverlay {
-  visibility: visible;
-  opacity: 1;
-}
+/* ===== النافذة المنبثقة ===== */
+.lgnBottomSheet { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 20; visibility: hidden; opacity: 0; transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s); pointer-events: none; }
+.lgnBottomSheet.visible { visibility: visible; opacity: 1; pointer-events: auto; }
+.lgnOverlay { position: fixed; inset: 0; background: rgba(0,0,0,.3); -webkit-backdrop-filter: saturate(180%) blur(10px); backdrop-filter: saturate(180%) blur(10px); visibility: hidden; opacity: 0; transition: visibility var(--trans-2, 0.3s), opacity var(--trans-2, 0.3s); cursor: pointer; z-index: 1; }
+.lgnBottomSheet.visible .lgnOverlay { visibility: visible; opacity: 1; }
 
-/* ===== النافذة ذات الارتفاع الثابت والهيدر الثابت ===== */
+/* ===== نافذة ثابتة الارتفاع، رأس ثابت، محتوى قابل للتمرير ===== */
 .lgnSheet {
   display: flex;
   flex-direction: column;
@@ -53,9 +24,8 @@
   z-index: 2;
   margin: auto;
 }
-.lgnBottomSheet.visible .lgnSheet {
-  transform: scale(1);
-}
+.lgnBottomSheet.visible .lgnSheet { transform: scale(1); }
+
 .lgnHeader {
   flex-shrink: 0;
   display: flex;
@@ -64,31 +34,14 @@
   padding: 14px 16px;
   border-bottom: 1px solid var(--contentL);
   background: var(--contentB);
-  z-index: 2;
+  z-index: 3; /* فوق المحتوى */
 }
-.lgnHeader h3 {
-  margin: 0;
-  font-size: .9rem;
-  font-weight: 600;
-  color: var(--headC);
-}
-.lgnClose {
-  background: 0;
-  border: 0;
-  cursor: pointer;
-  padding: 2px;
-  color: var(--bodyCa);
-  display: flex;
-  align-items: center;
-  flex-direction: row-reverse;
-  gap: 4px;
-  border-radius: 50%;
-  transition: background .2s;
-}
+.lgnHeader h3 { margin: 0; font-size: .9rem; font-weight: 600; color: var(--headC); }
+.lgnClose { background: 0; border: 0; cursor: pointer; padding: 2px; color: var(--bodyCa); display: flex; align-items: center; flex-direction: row-reverse; gap: 4px; border-radius: 50%; transition: background .2s; }
 .lgnClose:hover { background: var(--transB); }
 .lgnClose svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
 
-/* ===== محتوى قابل للتمرير مع شريط مخصص ===== */
+/* ===== محتوى داخلي قابل للتمرير بشريط مخصص ===== */
 .lgnBody {
   flex: 1;
   min-height: 0;
@@ -96,6 +49,8 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bodyCa) transparent;
 }
 .lgnBody::-webkit-scrollbar { width: 4px; }
 .lgnBody::-webkit-scrollbar-track { background: transparent; }
@@ -104,15 +59,13 @@
 /* ===== تذييل موحد مع خط فاصل ===== */
 .sheet-footer {
   flex-shrink: 0;
-  margin-top: 12px;
-  padding-top: 8px;
-  padding-bottom: 4px;
+  padding: 8px 16px 12px;
   border-top: 1px solid var(--contentL);
   display: flex;
-  justify-content: flex-end; /* زر الرجوع في الجهة اليسرى (RTL) */
+  justify-content: flex-end; /* زر في الجهة اليسرى (RTL) */
 }
 
-/* ===== زر الرجوع بدون أيقونة ===== */
+/* ===== زر رجوع بدون أيقونة، لون افتراضي ===== */
 .backBtn {
   display: inline-block;
   padding: 6px 16px;

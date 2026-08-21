@@ -14,50 +14,12 @@
   direction: rtl;
   font-family: inherit;
 }
-[data-sonner-toast] {
-  width: 360px;
-  max-width: calc(100vw - 32px);
-  box-sizing: border-box;
-}
+[data-sonner-toast] { width: 360px; max-width: calc(100vw - 32px); box-sizing: border-box; }
 .pwa-toast-message { flex: 1; min-width: 0; }
-.pwa-toast-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--headC, #111827);
-  margin-bottom: 4px;
-}
-.pwa-toast-desc {
-  font-size: 0.75rem;
-  color: var(--bodyCa, #6b7280);
-  line-height: 1.4;
-}
+.pwa-toast-title { font-size: 0.85rem; font-weight: 700; color: var(--headC, #111827); margin-bottom: 4px; }
+.pwa-toast-desc { font-size: 0.75rem; color: var(--bodyCa, #6b7280); line-height: 1.4; }
 .pwa-toast-buttons { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
-.pwa-toast-refresh {
-  padding: 4px 10px;
-  border-radius: 6px;
-  border: none;
-  font-size: 0.65rem;
-  font-weight: 600;
-  cursor: pointer;
-  background: var(--linkC, #2563eb);
-  color: #fff;
-  transition: opacity 0.2s, transform 0.1s;
-}
-.pwa-toast-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  border-radius: 6px;
-  border: 1px solid var(--contentL, #e5e7eb);
-  background: var(--bodyB, #f3f4f6);
-  color: var(--bodyC, #374151);
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
-}
-.pwa-toast-refresh:hover,
-.pwa-toast-close:hover { opacity: 0.85; }
-.pwa-toast-refresh:active,
-.pwa-toast-close:active { transform: scale(0.96); }
+.pwa-toast-refresh { padding: 4px 10px; border-radius: 6px; border: none; font-size: 0.65rem; font-weight: 600; cursor: pointer; background: var(--linkC, #2563eb); color: #fff; transition: opacity 0.2s, transform 0.1s; }
+.pwa-toast-close { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; padding: 0; border-radius: 6px; border: 1px solid var(--contentL, #e5e7eb); background: var(--bodyB, #f3f4f6); color: var(--bodyC, #374151); cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
+.pwa-toast-refresh:hover, .pwa-toast-close:hover { opacity: 0.85; }
+.pwa-toast-refresh:active, .pwa-toast-close:active { transform: scale(0.96); }

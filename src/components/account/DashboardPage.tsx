@@ -6,7 +6,6 @@ import type { UserSession } from '@/types';
 
 export function DashboardPage() {
   const [showSettings, setShowSettings] = createSignal(false);
-  let editForm: HTMLFormElement | undefined;
   let nameInput: HTMLInputElement | undefined;
   let picFileInput: HTMLInputElement | undefined;
   let picUrlInput: HTMLInputElement | undefined;
@@ -96,6 +95,7 @@ export function DashboardPage() {
               </svg>
             </button>
           </div>
+
           <div class="acctSessions">
             <label>الجلسات النشطة</label>
             {sessions().length === 0 ? <div style="font-size:.65rem;color:var(--bodyCa)">لا توجد جلسات</div> : sessions().map((session, idx) => (
@@ -128,6 +128,7 @@ export function DashboardPage() {
               </div>
             ))}
           </div>
+
           <div class="editPanel" style={{ display: showSettings() ? 'block' : 'none' }}>
             <form onSubmit={handleEditSubmit}>
               <label>الاسم:<input type="text" ref={nameInput} class="input" value={authStore.userName()} maxlength="32" required /></label>
