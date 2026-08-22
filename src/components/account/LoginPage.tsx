@@ -10,7 +10,6 @@ export function LoginPage() {
     googleAuthService.login((googleUser) => {
       authStore.login(googleUser.name, googleUser.email, googleUser.picture);
       toastService.show(`أهلاً بك، ${googleUser.name}!`);
-      authStore.openSheet('dashboard');
     });
   };
 
@@ -30,8 +29,11 @@ export function LoginPage() {
       <div class="gTitle">تسجيل الدخول إلى حسابك</div>
       <div class="gSub">مرحباً بعودتك! يرجى تسجيل الدخول للمتابعة.</div>
       <div class="gField">
+        <label for="guestEmail" style="display:none;">البريد الإلكتروني</label>
         <input
           type="email"
+          id="guestEmail"
+          name="email"
           ref={guestEmailRef}
           placeholder="البريد الإلكتروني"
           value=""

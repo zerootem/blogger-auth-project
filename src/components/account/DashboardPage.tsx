@@ -177,12 +177,16 @@ export function DashboardPage() {
 
           <div ref={settingsPanel} class="editPanel" style={{ display: showSettings() ? 'block' : 'none' }}>
             <form onSubmit={handleEditSubmit}>
-              <label>الاسم:<input type="text" ref={nameInput} class="input" value={authStore.userName()} maxlength="32" required /></label>
-              <label>النبذة / الوصف:<textarea ref={bioInput} class="input" style="height:60px;resize:vertical;" placeholder="أضف نبذة قصيرة عنك">{authStore.userBio()}</textarea></label>
+              <label for="editName">الاسم:</label>
+              <input type="text" id="editName" name="name" ref={nameInput} class="input" value={authStore.userName()} maxlength="32" required />
+              <label for="editBio">النبذة / الوصف:</label>
+              <textarea id="editBio" name="bio" ref={bioInput} class="input" style="height:60px;resize:vertical;" placeholder="أضف نبذة قصيرة عنك">{authStore.userBio()}</textarea>
               <div class="border-t my-2" />
               <div class="text-sm">تغيير الصورة:</div>
-              <label class="block mb-1">(رفع صورة من جهازك)<input type="file" ref={picFileInput} accept="image/*" class="input" /></label>
-              <label class="block">(أو رابط مباشر للصورة)<input type="url" ref={picUrlInput} class="input" placeholder="https://example.com/avatar.jpg" /></label>
+              <label for="editPicFile" class="block mb-1">(رفع صورة من جهازك)</label>
+              <input type="file" id="editPicFile" name="pictureFile" ref={picFileInput} accept="image/*" class="input" />
+              <label for="editPicUrl" class="block">(أو رابط مباشر للصورة)</label>
+              <input type="url" id="editPicUrl" name="pictureUrl" ref={picUrlInput} class="input" placeholder="https://example.com/avatar.jpg" />
               <button type="submit" class="button primary w-full mt-2">حفظ التعديلات</button>
             </form>
           </div>

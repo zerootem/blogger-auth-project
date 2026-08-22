@@ -36,7 +36,7 @@ export function StatsPage() {
         return;
       }
       const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+      script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js';
       script.onload = () => resolve();
       script.onerror = () => reject(new Error('فشل تحميل Chart.js'));
       document.head.appendChild(script);
