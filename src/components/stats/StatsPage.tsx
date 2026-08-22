@@ -47,8 +47,8 @@ export function StatsPage() {
     if (!chartCanvas || !(window as any).Chart) return;
 
     const days = last7Days();
-    const labels = days.map(d => d.label);
-    const data = days.map(d => d.count);
+    const labels = days.map((d: any) => d.label);
+    const data = days.map((d: any) => d.count);
     const ctx = chartCanvas.getContext('2d');
     if (!ctx) return;
 
@@ -86,8 +86,8 @@ export function StatsPage() {
             usePointStyle: 'triangle',
             boxPadding: 3,
             callbacks: {
-              label: (ctx) => `نشاط: ${ctx.raw}`,
-              title: (ctx) => `تاريخ: ${ctx[0].label}`
+              label: (ctx: any) => `نشاط: ${ctx.raw}`,
+              title: (ctx: any) => `تاريخ: ${ctx[0].label}`
             }
           },
           legend: { display: false }
@@ -100,7 +100,7 @@ export function StatsPage() {
           y: {
             beginAtZero: true,
             ticks: {
-              callback: (value) => Math.round(Number(value)),
+              callback: (value: any) => Math.round(Number(value)),
               font: { size: 10 }
             }
           }
