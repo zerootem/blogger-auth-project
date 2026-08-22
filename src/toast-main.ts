@@ -94,14 +94,27 @@ let idleToastShown = false;
 const IDLE_DELAY = 30000;
 
 function resetActivity(e?: Event) {
-  const target = e?.target as HTMLElement | null;
-  if (target && target.closest('.pwa-toast-refresh, .pwa-toast-close')) return;
+  // الإصلاح: التحقق من أن target عنصر HTML ويملك closest
+  const target = e?.target;
+  if (target && target instanceof Element && typeof (target as Element).closest === 'function') {
+    const el = target as Element;
+    if (el.closest('.pwa-toast-refresh, .pwa-toast-close')) {
+      return; // لا نغلق التنبيه إذا كان النقر على زر تحديث أو إغلاق
+    }
+  }
   lastActivity = Date.now();
-  if (idleToastShown) { toast.dismiss(); idleToastShown = false; }
+  if (idleToastShown) {
+    toast.dismiss();
+    idleToastShown = false;
+  }
 }
 
-['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evt => window.addEventListener(evt, resetActivity, { passive: true }));
-window.addEventListener('mousemove', () => { lastActivity = Date.now(); }, { passive: true });
+['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evt =>
+  window.addEventListener(evt, resetActivity, { passive: true })
+);
+window.addEventListener('mousemove', () => {
+  lastActivity = Date.now();
+}, { passive: true });
 
 setInterval(() => {
   if (!idleToastShown && Date.now() - lastActivity >= IDLE_DELAY) {
