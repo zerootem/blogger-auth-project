@@ -14,10 +14,19 @@ export function DashboardPage() {
   let settingsPanel: HTMLDivElement | undefined;
   let settingsButton: HTMLButtonElement | undefined;
 
-  const ensureCurrentSession = () => {
+  const ensureCurrentSession = async () => {
     let sessions = storageService.getSessions();
     const hasCurrent = sessions.some(s => s.isCurrent);
     if (!hasCurrent) {
+      let ip = 'غير معروف';
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        ip = data.ip || 'غير معروف';
+      } catch (e) {
+        console.warn('تعذر جلب IP');
+      }
+
       const newSession: UserSession = {
         id: Date.now(),
         time: new Date().toLocaleString('en-US', {
@@ -26,7 +35,7 @@ export function DashboardPage() {
         os: navigator.userAgent.includes('Win') ? 'Windows' :
             navigator.userAgent.includes('Mac') ? 'Mac' :
             navigator.userAgent.includes('Linux') ? 'Linux' : 'Android/iOS',
-        ip: 'محلي',
+        ip: ip,
         isCurrent: true
       };
       storageService.addSession(newSession);
@@ -34,7 +43,6 @@ export function DashboardPage() {
     authStore.refreshSessions();
   };
 
-  // إغلاق الإعدادات تلقائيًا عند إغلاق النافذة
   createEffect(() => {
     if (!authStore.isSheetOpen()) {
       setShowSettings(false);
@@ -146,7 +154,7 @@ export function DashboardPage() {
                     </div>
                     <div style="display:flex;align-items:center;gap:3px;">
                       <svg class="line" viewBox="0 0 24 24" width="10" height="10"><path d="M12 13.4299C13.7231 13.4299 15.12 12.0331 15.12 10.3099C15.12 8.58681 13.7231 7.18994 12 7.18994C10.2769 7.18994 8.88 8.58681 8.88 10.3099C8.88 12.0331 10.2769 13.4299 12 13.4299Z"/><path d="M3.62001 8.49C5.59001 -0.169998 18.42 -0.159997 20.38 8.5C21.53 13.58 18.37 17.88 15.6 20.54C13.59 22.48 10.41 22.48 8.39001 20.54C5.63001 17.88 2.47001 13.57 3.62001 8.49Z"/></svg>
-                      <b>IP:</b> {session.ip || "محلي"}
+                      <b>IP:</b> {session.ip || "غير معروف"}
                     </div>
                     <div style="display:flex;align-items:center;gap:3px;">
                       <svg class="line" viewBox="0 0 24 24" width="10" height="10"><path d="M14.4399 19.05L15.9599 20.57L18.9999 17.53"/><path d="M12.16 10.87C12.06 10.86 11.94 10.86 11.83 10.87C9.44997 10.79 7.55997 8.84 7.55997 6.44C7.54997 3.99 9.53997 2 11.99 2C14.44 2 16.43 3.99 16.43 6.44C16.43 8.84 14.53 10.79 12.16 10.87Z"/><path d="M11.99 21.8101C10.17 21.8101 8.36004 21.3501 6.98004 20.4301C4.56004 18.8101 4.56004 16.1701 6.98004 14.5601C9.73004 12.7201 14.24 12.7201 16.99 14.5601"/></svg>
@@ -180,7 +188,7 @@ export function DashboardPage() {
           </div>
         </div>
       </div>
-      <div class="sheet-footer"></div>
+      <div class="lgnFooter"></div>
     </div>
   );
 }

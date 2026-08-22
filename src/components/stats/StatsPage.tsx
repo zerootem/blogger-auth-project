@@ -1,7 +1,8 @@
-import { createSignal } from 'solid-js';
-import { storageService } from '@/services/storage.service';
-import { CONFIG } from '@/config';
+import { createSignal, onMount } from 'solid-js';
+import { supabaseService } from '@/services/supabase.service';
+import { authStore } from '@/stores/auth.store';
 import { toastService } from '@/services/toast.service';
+import { CONFIG } from '@/config';
 
 const LoginIcon = () => (
   <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M11.68 14.62L14.24 12.06 11.68 9.5"/><path d="M4 12.06h10.17"/><path d="M12 4c4.42 0 8 3 8 8s-3.58 8-8 8"/></svg>
@@ -20,11 +21,26 @@ const MailIcon = () => (
 );
 
 export function StatsPage() {
-  const loginCount = () => storageService.getLoginCount();
-  const lastArticle = () => storageService.getLastVisitedArticle();
+  const [loginCount, setLoginCount] = createSignal(0);
+  const [lastArticle, setLastArticle] = createSignal<{ title: string; url: string } | null>(null);
+  const [sessionStart, setSessionStart] = createSignal<string | null>(null);
+  const [loginHistory, setLoginHistory] = createSignal<Record<string, number>>({});
+
+  onMount(async () => {
+    const email = authStore.userEmail();
+    if (email) {
+      const profile = await supabaseService.getProfile(email);
+      if (profile) {
+        setLoginCount(profile.login_count || 0);
+        setLastArticle(profile.last_visited_article || null);
+        setSessionStart(profile.session_start || null);
+        setLoginHistory(profile.login_history || {});
+      }
+    }
+  });
 
   const sessionDuration = () => {
-    const start = storageService.getSessionStartTime();
+    const start = sessionStart();
     if (!start) return 'غير متاحة';
     const now = new Date();
     const diffMs = now.getTime() - new Date(start).getTime();
@@ -37,7 +53,7 @@ export function StatsPage() {
   };
 
   const last7Days = () => {
-    const history = storageService.getLoginHistory();
+    const history = loginHistory();
     const days = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
@@ -54,7 +70,7 @@ export function StatsPage() {
     const msg = message().trim();
     if (!msg) { toastService.show('الرجاء كتابة رسالة'); return; }
     const subject = encodeURIComponent('رسالة من مركز الإحصائيات');
-    const body = encodeURIComponent(`المستخدم: ${storageService.getUserName()} (${storageService.getUserEmail()})\n\n${msg}`);
+    const body = encodeURIComponent(`المستخدم: ${authStore.userName()} (${authStore.userEmail()})\n\n${msg}`);
     window.location.href = `mailto:${CONFIG.adminEmail}?subject=${subject}&body=${body}`;
     setMessage('');
     toastService.show('تم فتح برنامج البريد لإرسال الرسالة');
