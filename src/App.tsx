@@ -68,6 +68,25 @@ export function App() {
             </Match>
           </Switch>
         </div>
+        <div class="lgnFooter">
+          <Switch>
+            <Match when={authStore.isLoggedIn() && authStore.sheetView() === 'dashboard'}>
+              <button class="backBtn" onClick={() => authStore.logout()}>تسجيل الخروج</button>
+            </Match>
+            <Match when={authStore.isLoggedIn() && authStore.sheetView() === 'members'}>
+              <button class="backBtn" onClick={() => authStore.openSheet('dashboard')}>الرجوع للوحة</button>
+            </Match>
+            <Match when={authStore.isLoggedIn() && authStore.sheetView() === 'profile'}>
+              <button class="backBtn" onClick={() => authStore.openSheet('members')}>الرجوع للأعضاء</button>
+            </Match>
+            <Match when={authStore.isLoggedIn() && authStore.sheetView() === 'stats'}>
+              <button class="backBtn" onClick={() => authStore.openSheet('dashboard')}>الرجوع للوحة</button>
+            </Match>
+            <Match when={authStore.isLoggedIn() && authStore.sheetView() === 'products'}>
+              <button class="backBtn" onClick={() => authStore.openSheet('dashboard')}>الرجوع للوحة</button>
+            </Match>
+          </Switch>
+        </div>
       </div>
     </div>
   );

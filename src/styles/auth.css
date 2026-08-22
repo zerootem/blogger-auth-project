@@ -5,7 +5,7 @@
   inset-inline-end: 0;
   width: 375px;
   max-width: 90vw;
-  display: block; /* إلغاء flex المركزي */
+  display: block;
   z-index: 4;
   visibility: hidden;
   opacity: 0;
@@ -52,7 +52,7 @@
   transform-origin: top left;
 }
 
-/* ===== الترويسة والمحتوى ===== */
+/* ===== الترويسة ===== */
 .lgnHeader {
   flex-shrink: 0;
   display: flex;
@@ -97,6 +97,7 @@
   fill: none;
 }
 
+/* ===== جسم النافذة ===== */
 .lgnBody {
   flex: 1;
   min-height: 0;
@@ -106,20 +107,22 @@
   scroll-behavior: smooth;
 }
 
-.lgnBody::-webkit-scrollbar {
-  width: 4px;
+.lgnBody::-webkit-scrollbar { width: 4px; }
+.lgnBody::-webkit-scrollbar-track { background: transparent; }
+.lgnBody::-webkit-scrollbar-thumb { background: var(--bodyCa, #9ca3af); border-radius: 4px; }
+
+/* ===== التذييل الثابت ===== */
+.lgnFooter {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--contentL);
+  background: var(--contentB);
 }
 
-.lgnBody::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.lgnBody::-webkit-scrollbar-thumb {
-  background: var(--bodyCa, #9ca3af);
-  border-radius: 4px;
-}
-
-/* ===== الجوال: تتحول إلى Bottom Sheet من الأسفل ===== */
+/* ===== الجوال: Bottom Sheet من الأسفل ===== */
 @media screen and (max-width: 500px) {
   .lgnBottomSheet {
     position: fixed;
@@ -147,8 +150,8 @@
   }
 
   .lgnSheet {
-    height: 70vh;
-    max-height: 70vh;
+    height: auto;              /* الارتفاع حسب المحتوى */
+    max-height: 70vh;          /* الحد الأقصى */
     width: 100%;
     max-width: 100%;
     margin: 0;
@@ -175,7 +178,7 @@
   }
 }
 
-/* ===== بطاقات الحساب والجلسات ===== */
+/* ===== مكونات الصفحات ===== */
 .acctCard { background: var(--contentB); border-radius: 12px; border: 1px solid var(--contentL); padding: 12px 14px; margin-bottom: 8px; }
 .acctUser { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; position: relative; }
 .acctAvatar { width: 56px; height: 56px; border-radius: 8px; border: 2px solid var(--contentL); flex-shrink: 0; overflow: hidden; background: var(--linkB); }
@@ -261,16 +264,6 @@
   transition: opacity 0.2s;
 }
 .backBtn:hover { opacity: 0.85; }
-
-/* تذييل موحد مع خط فاصل وزر في الجهة اليمنى */
-.sheet-footer {
-  flex-shrink: 0;
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid var(--contentL);
-  display: flex;
-  justify-content: flex-start;
-}
 
 /* الإحصائيات */
 .statsGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }

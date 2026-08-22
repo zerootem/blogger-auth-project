@@ -12,31 +12,21 @@ export function ProfilePage() {
     setMember(found);
   });
 
-  const goBackToMembers = () => {
-    authStore.setSheetView('members');
-    authStore.openSheet('members');
-  };
-
   return (
-    <div style="display:flex; flex-direction:column; min-height:100%;">
-      <div style="flex:1;">
-        {member() === undefined ? (
-          <div style="text-align:center;padding:20px 0;color:var(--bodyCa)">جاري التحميل...</div>
-        ) : member() === null ? (
-          <div style="text-align:center;padding:30px 0;color:var(--bodyCa)">العضو غير موجود</div>
-        ) : (
-          <div class="profileView">
-            <div class="avatar"><img src={member()!.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(member()!.name)}&background=0D8ABC&color=fff`} alt={member()!.name} /></div>
-            <div class="name">{member()!.name}</div>
-            {member()!.bio && <div style="font-size:.8rem;color:var(--bodyCa);margin:4px 0;line-height:1.5;">{member()!.bio}</div>}
-            <div class="joinDate">انضم: {member()!.joinDate ? new Date(member()!.joinDate).toLocaleDateString('ar-EG', { day: '2-digit', month: 'short', year: 'numeric' }) : 'غير محدد'}</div>
-            <div style="margin-top:8px;font-size:.7rem;color:var(--bodyCa)">{member()!.online ? ' نشط حالياً' : ' غير متصل'}</div>
-          </div>
-        )}
-      </div>
-      <div class="sheet-footer">
-        <button onClick={goBackToMembers} class="backBtn">الرجوع للأعضاء</button>
-      </div>
+    <div>
+      {member() === undefined ? (
+        <div style="text-align:center;padding:20px 0;color:var(--bodyCa)">جاري التحميل...</div>
+      ) : member() === null ? (
+        <div style="text-align:center;padding:30px 0;color:var(--bodyCa)">العضو غير موجود</div>
+      ) : (
+        <div class="profileView">
+          <div class="avatar"><img src={member()!.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(member()!.name)}&background=0D8ABC&color=fff`} alt={member()!.name} /></div>
+          <div class="name">{member()!.name}</div>
+          {member()!.bio && <div style="font-size:.8rem;color:var(--bodyCa);margin:4px 0;line-height:1.5;">{member()!.bio}</div>}
+          <div class="joinDate">انضم: {member()!.joinDate ? new Date(member()!.joinDate).toLocaleDateString('ar-EG', { day: '2-digit', month: 'short', year: 'numeric' }) : 'غير محدد'}</div>
+          <div style="margin-top:8px;font-size:.7rem;color:var(--bodyCa)">{member()!.online ? ' نشط حالياً' : ' غير متصل'}</div>
+        </div>
+      )}
     </div>
   );
 }

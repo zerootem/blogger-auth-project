@@ -2,7 +2,6 @@ import { createSignal } from 'solid-js';
 import { storageService } from '@/services/storage.service';
 import { CONFIG } from '@/config';
 import { toastService } from '@/services/toast.service';
-import { authStore } from '@/stores/auth.store';
 
 const LoginIcon = () => (
   <svg class="line" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M11.68 14.62L14.24 12.06 11.68 9.5"/><path d="M4 12.06h10.17"/><path d="M12 4c4.42 0 8 3 8 8s-3.58 8-8 8"/></svg>
@@ -62,26 +61,23 @@ export function StatsPage() {
   };
 
   return (
-    <div style="display:flex; flex-direction:column; min-height:100%;">
-      <div style="flex:1;">
-        <div class="statsGrid">
-          <div class="statCard"><div class="statIcon"><LoginIcon /></div><div class="statInfo"><div class="statValue">{loginCount()}</div><div class="statLabel">دخول</div></div></div>
-          <div class="statCard"><div class="statIcon"><TimerIcon /></div><div class="statInfo"><div class="statValue">{sessionDuration()}</div><div class="statLabel">الجلسة</div></div></div>
-          <div class="statCard"><div class="statIcon"><ArticleIcon /></div><div class="statInfo">{lastArticle() ? <a href={lastArticle()!.url} target="_blank" rel="noopener" class="statLink">{lastArticle()!.title}</a> : <div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">لا يوجد</div>}<div class="statLabel">آخر مقال</div></div></div>
-          <div class="statCard"><div class="statIcon"><ProductIcon /></div><div class="statInfo"><div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">قيد الإنشاء</div><div class="statLabel">المنتجات</div></div></div>
-        </div>
-        <div class="chartContainer">
-          <div class="chartTitle">نشاط آخر 7 أيام</div>
-          <div class="chartBars">{last7Days().map(day => <div class="chartBarItem"><div class="chartBar" style={{ height: Math.max(day.count * 18, 4) + 'px' }} title={`${day.count} مرات`}></div><div class="chartLabel">{day.label}</div></div>)}</div>
-        </div>
-        <div class="contactForm">
-          <div class="chartTitle"><span style="display:inline-flex;align-items:center;gap:6px;"><MailIcon /> تواصل مع المشرف</span></div>
-          <textarea class="contactInput" placeholder="اكتب رسالتك هنا..." value={message()} onInput={(e) => setMessage(e.currentTarget.value)} rows="2"></textarea>
-          <button class="contactBtn" onClick={sendMessage}>إرسال</button>
-        </div>
+    <div style="padding:4px 0;">
+      <div class="statsGrid">
+        <div class="statCard"><div class="statIcon"><LoginIcon /></div><div class="statInfo"><div class="statValue">{loginCount()}</div><div class="statLabel">دخول</div></div></div>
+        <div class="statCard"><div class="statIcon"><TimerIcon /></div><div class="statInfo"><div class="statValue">{sessionDuration()}</div><div class="statLabel">الجلسة</div></div></div>
+        <div class="statCard"><div class="statIcon"><ArticleIcon /></div><div class="statInfo">{lastArticle() ? <a href={lastArticle()!.url} target="_blank" rel="noopener" class="statLink">{lastArticle()!.title}</a> : <div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">لا يوجد</div>}<div class="statLabel">آخر مقال</div></div></div>
+        <div class="statCard"><div class="statIcon"><ProductIcon /></div><div class="statInfo"><div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">قيد الإنشاء</div><div class="statLabel">المنتجات</div></div></div>
       </div>
-      <div class="sheet-footer">
-        <button onClick={() => authStore.openSheet('dashboard')} class="backBtn">الرجوع للوحة</button>
+
+      <div class="chartContainer">
+        <div class="chartTitle">نشاط آخر 7 أيام</div>
+        <div class="chartBars">{last7Days().map(day => <div class="chartBarItem"><div class="chartBar" style={{ height: Math.max(day.count * 18, 4) + 'px' }} title={`${day.count} مرات`}></div><div class="chartLabel">{day.label}</div></div>)}</div>
+      </div>
+
+      <div class="contactForm">
+        <div class="chartTitle"><span style="display:inline-flex;align-items:center;gap:6px;"><MailIcon /> تواصل مع المشرف</span></div>
+        <textarea class="contactInput" placeholder="اكتب رسالتك هنا..." value={message()} onInput={(e) => setMessage(e.currentTarget.value)} rows="2"></textarea>
+        <button class="contactBtn" onClick={sendMessage}>إرسال</button>
       </div>
     </div>
   );
