@@ -1,5 +1,6 @@
 import { createSignal, onMount } from 'solid-js';
 import { supabaseService } from '@/services/supabase.service';
+import { storageService } from '@/services/storage.service';
 import { authStore } from '@/stores/auth.store';
 import { toastService } from '@/services/toast.service';
 import { CONFIG } from '@/config';
@@ -27,14 +28,23 @@ export function StatsPage() {
   const [loginHistory, setLoginHistory] = createSignal<Record<string, number>>({});
 
   onMount(async () => {
+    // قراءة آخر مقال من التخزين المحلي أولاً
+    const localArticle = storageService.getLastVisitedArticle();
+    if (localArticle) {
+      setLastArticle(localArticle);
+    }
+
     const email = authStore.userEmail();
     if (email) {
       const profile = await supabaseService.getProfile(email);
       if (profile) {
         setLoginCount(profile.login_count || 0);
-        setLastArticle(profile.last_visited_article || null);
         setSessionStart(profile.session_start || null);
         setLoginHistory(profile.login_history || {});
+        // إذا لم يوجد محلي نستخدم المخزن في Supabase
+        if (!localArticle && profile.last_visited_article) {
+          setLastArticle(profile.last_visited_article);
+        }
       }
     }
   });
@@ -81,7 +91,10 @@ export function StatsPage() {
       <div class="statsGrid">
         <div class="statCard"><div class="statIcon"><LoginIcon /></div><div class="statInfo"><div class="statValue">{loginCount()}</div><div class="statLabel">دخول</div></div></div>
         <div class="statCard"><div class="statIcon"><TimerIcon /></div><div class="statInfo"><div class="statValue">{sessionDuration()}</div><div class="statLabel">الجلسة</div></div></div>
-        <div class="statCard"><div class="statIcon"><ArticleIcon /></div><div class="statInfo">{lastArticle() ? <a href={lastArticle()!.url} target="_blank" rel="noopener" class="statLink">{lastArticle()!.title}</a> : <div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">لا يوجد</div>}<div class="statLabel">آخر مقال</div></div></div>
+        <div class="statCard"><div class="statIcon"><ArticleIcon /></div><div class="statInfo">
+          {lastArticle() ? <a href={lastArticle()!.url} target="_blank" rel="noopener" class="statLink">{lastArticle()!.title}</a> : <div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">لا يوجد</div>}
+          <div class="statLabel">آخر مقال</div>
+        </div></div>
         <div class="statCard"><div class="statIcon"><ProductIcon /></div><div class="statInfo"><div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">قيد الإنشاء</div><div class="statLabel">المنتجات</div></div></div>
       </div>
 

@@ -4,6 +4,8 @@ import { authStore } from '@/stores/auth.store';
 import { googleAuthService } from '@/services/google-auth.service';
 import { toastService } from '@/services/toast.service';
 import { communityService } from '@/services/community.service';
+import { supabaseService } from '@/services/supabase.service';
+import { storageService } from '@/services/storage.service';
 import '@/styles/auth.css';
 
 // تعريف الدوال العامة للقالب
@@ -17,11 +19,28 @@ import '@/styles/auth.css';
   toastService.show('تم تسجيل الخروج بنجاح!');
 };
 
+// تتبع زيارة المقال
+function trackArticleVisit() {
+  // نكتشف عنوان المقال من الصفحة
+  const titleElement = document.querySelector('h1.post-title, h1.entry-title, h3.post-title a');
+  const title = titleElement?.textContent?.trim() || document.title.split('|')[0].trim();
+  const url = window.location.href;
+
+  if (title && window.location.pathname.includes('/p/') || window.location.pathname.includes('.html')) {
+    storageService.setLastVisitedArticle(title, url);
+    if (authStore.isLoggedIn()) {
+      supabaseService.setLastVisitedArticle(authStore.userEmail(), { title, url });
+    }
+  }
+}
+
 function initApp() {
   const root = document.getElementById('modpro-auth-root');
   if (root) {
     render(() => <App />, root);
   }
+
+  trackArticleVisit();
 
   if (!authStore.isLoggedIn()) {
     googleAuthService.initOneTap((googleUser) => {
