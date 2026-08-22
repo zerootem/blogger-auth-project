@@ -1,4 +1,4 @@
-import { createSignal, onMount } from 'solid-js';
+import { createSignal, onMount, onCleanup } from 'solid-js';
 import { supabaseService } from '@/services/supabase.service';
 import { storageService } from '@/services/storage.service';
 import { authStore } from '@/stores/auth.store';
@@ -26,13 +26,92 @@ export function StatsPage() {
   const [lastArticle, setLastArticle] = createSignal<{ title: string; url: string } | null>(null);
   const [sessionStart, setSessionStart] = createSignal<string | null>(null);
   const [loginHistory, setLoginHistory] = createSignal<Record<string, number>>({});
+  let chartCanvas: HTMLCanvasElement | undefined;
+  let chartInstance: any = null;
+
+  const loadChartJs = () => {
+    return new Promise<void>((resolve, reject) => {
+      if ((window as any).Chart) {
+        resolve();
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('فشل تحميل Chart.js'));
+      document.head.appendChild(script);
+    });
+  };
+
+  const createChart = () => {
+    if (!chartCanvas || !(window as any).Chart) return;
+
+    const days = last7Days();
+    const labels = days.map(d => d.label);
+    const data = days.map(d => d.count);
+    const ctx = chartCanvas.getContext('2d');
+    if (!ctx) return;
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, chartCanvas.height);
+    gradient.addColorStop(0, 'rgba(195, 113, 239, 0.15)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+    chartInstance = new (window as any).Chart(chartCanvas, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'نشاط',
+          data,
+          fill: true,
+          tension: 0.4,
+          borderColor: '#c371ef',
+          borderWidth: 2,
+          backgroundColor: gradient,
+          pointRadius: 2,
+          pointHoverRadius: 5,
+          pointHoverBorderWidth: 4,
+          pointHoverBackgroundColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          tooltip: {
+            backgroundColor: 'rgba(53, 27, 92, 0.8)',
+            caretPadding: 5,
+            boxWidth: 5,
+            usePointStyle: 'triangle',
+            boxPadding: 3,
+            callbacks: {
+              label: (ctx) => `نشاط: ${ctx.raw}`,
+              title: (ctx) => `تاريخ: ${ctx[0].label}`
+            }
+          },
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 10 } }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: (value) => Math.round(Number(value)),
+              font: { size: 10 }
+            }
+          }
+        }
+      }
+    });
+  };
 
   onMount(async () => {
-    // قراءة آخر مقال من التخزين المحلي أولاً
     const localArticle = storageService.getLastVisitedArticle();
-    if (localArticle) {
-      setLastArticle(localArticle);
-    }
+    if (localArticle) setLastArticle(localArticle);
 
     const email = authStore.userEmail();
     if (email) {
@@ -41,26 +120,26 @@ export function StatsPage() {
         setLoginCount(profile.login_count || 0);
         setSessionStart(profile.session_start || null);
         setLoginHistory(profile.login_history || {});
-        // إذا لم يوجد محلي نستخدم المخزن في Supabase
         if (!localArticle && profile.last_visited_article) {
           setLastArticle(profile.last_visited_article);
         }
       }
     }
+
+    try {
+      await loadChartJs();
+      createChart();
+    } catch (e) {
+      console.warn('تعذر تحميل Chart.js', e);
+    }
   });
 
-  const sessionDuration = () => {
-    const start = sessionStart();
-    if (!start) return 'غير متاحة';
-    const now = new Date();
-    const diffMs = now.getTime() - new Date(start).getTime();
-    const minutes = Math.floor(diffMs / 60000);
-    if (minutes < 1) return 'أقل من دقيقة';
-    if (minutes < 60) return `${minutes} د`;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours} س ${mins} د`;
-  };
+  onCleanup(() => {
+    if (chartInstance) {
+      chartInstance.destroy();
+      chartInstance = null;
+    }
+  });
 
   const last7Days = () => {
     const history = loginHistory();
@@ -73,6 +152,19 @@ export function StatsPage() {
       days.push({ label, count: history[key] || 0 });
     }
     return days;
+  };
+
+  const sessionDuration = () => {
+    const start = sessionStart();
+    if (!start) return 'غير متاحة';
+    const now = new Date();
+    const diffMs = now.getTime() - new Date(start).getTime();
+    const minutes = Math.floor(diffMs / 60000);
+    if (minutes < 1) return 'أقل من دقيقة';
+    if (minutes < 60) return `${minutes} د`;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours} س ${mins} د`;
   };
 
   const [message, setMessage] = createSignal('');
@@ -98,9 +190,11 @@ export function StatsPage() {
         <div class="statCard"><div class="statIcon"><ProductIcon /></div><div class="statInfo"><div class="statValue" style="font-size:.75rem;color:var(--bodyCa)">قيد الإنشاء</div><div class="statLabel">المنتجات</div></div></div>
       </div>
 
-      <div class="chartContainer">
+      <div class="chartContainer" style="height:180px; padding:8px;">
         <div class="chartTitle">نشاط آخر 7 أيام</div>
-        <div class="chartBars">{last7Days().map(day => <div class="chartBarItem"><div class="chartBar" style={{ height: Math.max(day.count * 18, 4) + 'px' }} title={`${day.count} مرات`}></div><div class="chartLabel">{day.label}</div></div>)}</div>
+        <div style="position:relative; height:140px;">
+          <canvas ref={chartCanvas} style="width:100%; height:140px;"></canvas>
+        </div>
       </div>
 
       <div class="contactForm">
