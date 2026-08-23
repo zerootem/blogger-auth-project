@@ -1,9 +1,33 @@
 import { createSignal, onMount, createEffect, onCleanup } from 'solid-js';
 import { authStore } from '@/stores/auth.store';
 import { storageService } from '@/services/storage.service';
-import { supabaseService } from '@/services/supabase.service';
 import { toastService } from '@/services/toast.service';
 import type { UserSession } from '@/types';
+
+function getDeviceInfo(): { os: string; browser: string } {
+  const ua = navigator.userAgent;
+  let os = 'غير معروف';
+  let browser = 'متصفح غير معروف';
+
+  if (ua.includes('Android')) os = 'Android';
+  else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+  else if (ua.includes('Windows NT 10.0')) os = 'Windows 10/11';
+  else if (ua.includes('Windows NT 6.3')) os = 'Windows 8.1';
+  else if (ua.includes('Windows NT 6.2')) os = 'Windows 8';
+  else if (ua.includes('Windows NT 6.1')) os = 'Windows 7';
+  else if (ua.includes('Mac OS X')) os = 'macOS';
+  else if (ua.includes('Linux') && ua.includes('CrOS')) os = 'ChromeOS';
+  else if (ua.includes('Linux')) os = 'Linux';
+
+  if (ua.includes('Edg/')) browser = 'Edge';
+  else if (ua.includes('Chrome/')) browser = 'Chrome';
+  else if (ua.includes('Firefox/')) browser = 'Firefox';
+  else if (ua.includes('Safari/') && !ua.includes('Chrome/')) browser = 'Safari';
+  else if (ua.includes('Opera/') || ua.includes('OPR/')) browser = 'Opera';
+  else if (ua.includes('SamsungBrowser/')) browser = 'Samsung Internet';
+
+  return { os, browser };
+}
 
 export function DashboardPage() {
   const [showSettings, setShowSettings] = createSignal(false);
@@ -15,17 +39,28 @@ export function DashboardPage() {
   let settingsPanel: HTMLDivElement | undefined;
   let settingsButton: HTMLButtonElement | undefined;
 
-  const ensureCurrentSession = () => {
+  const ensureCurrentSession = async () => {
     let sessions = storageService.getSessions();
     const hasCurrent = sessions.some(s => s.isCurrent);
     if (!hasCurrent) {
+      let ip = 'غير معروف';
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        ip = data.ip || 'غير معروف';
+      } catch (e) {
+        console.warn('تعذر جلب IP');
+      }
+
+      const device = getDeviceInfo();
+
       const newSession: UserSession = {
         id: Date.now(),
-        time: new Date().toLocaleString('en-US', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        os: navigator.userAgent.includes('Win') ? 'Windows' :
-            navigator.userAgent.includes('Mac') ? 'Mac' :
-            navigator.userAgent.includes('Linux') ? 'Linux' : 'Android/iOS',
-        ip: 'محلي',
+        time: new Date().toLocaleString('en-US', {
+          day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        }),
+        os: `${device.os} (${device.browser})`,
+        ip: ip,
         isCurrent: true
       };
       storageService.addSession(newSession);
