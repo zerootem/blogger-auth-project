@@ -1,7 +1,7 @@
 import { createSignal, createMemo } from 'solid-js';
 import type { UserSession, SheetView } from '@/types';
 import { storageService } from '@/services/storage.service';
-import { supabaseService } from '@/services/supabase.service';
+import { supabaseService, SessionRecord } from '@/services/supabase.service';
 import { CONFIG } from '@/config';
 
 const [isLoggedIn, setIsLoggedIn] = createSignal(storageService.isLoggedIn());
@@ -23,7 +23,7 @@ const userInitial = createMemo(() => {
 function getOrCreateSessionId(): string {
   let id = localStorage.getItem('sessionId');
   if (!id) {
-    id = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
+    id = crypto.randomUUID ? crypto.randomUUID() : `sess-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     localStorage.setItem('sessionId', id);
   }
   return id;
@@ -32,11 +32,11 @@ function getOrCreateSessionId(): string {
 function getOS(): string {
   const ua = navigator.userAgent;
   if (ua.includes('Android')) return 'Android';
-  if (ua.includes('iPhone')) return 'iOS';
+  if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
   if (ua.includes('Windows')) return 'Windows';
-  if (ua.includes('Mac')) return 'MacOS';
-  if (ua.includes('Linux')) return 'Linux';
+  if (ua.includes('Macintosh') || ua.includes('Mac OS X')) return 'macOS';
   if (ua.includes('CrOS')) return 'ChromeOS';
+  if (ua.includes('Linux')) return 'Linux';
   return 'غير معروف';
 }
 
@@ -49,7 +49,6 @@ async function login(name: string, email: string, picture: string) {
   setUserPicture(picture);
   setJoinDate(now);
 
-  // إنشاء جلسة جديدة
   const sessionId = getOrCreateSessionId();
   try {
     let ip = 'غير معروف';
@@ -57,18 +56,22 @@ async function login(name: string, email: string, picture: string) {
       const res = await fetch('https://api.ipify.org?format=json');
       const data = await res.json();
       ip = data.ip || 'غير معروف';
-    } catch {}
+    } catch (ipErr) {
+      console.warn('تعذر جلب IP', ipErr);
+    }
 
-    await supabaseService.createSession({
+    const session: SessionRecord = {
       user_email: email,
       session_id: sessionId,
       time: new Date().toLocaleString('en-US', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
       os: getOS(),
       ip,
       is_current: true,
-    });
+    };
+    await supabaseService.createSession(session);
+    console.log('تم إنشاء الجلسة في Supabase:', session);
   } catch (e) {
-    console.warn('تعذر حفظ الجلسة في Supabase', e);
+    console.error('فشل حفظ الجلسة في Supabase:', e);
   }
 
   try {
@@ -86,6 +89,9 @@ async function login(name: string, email: string, picture: string) {
     console.warn('Supabase profile sync skipped:', e);
   }
 
+  // جلب الجلسات فورًا بعد تسجيل الدخول
+  await refreshSessions();
+
   if (typeof (window as any).updateAccountUI === 'function') {
     (window as any).updateAccountUI();
   }
@@ -97,7 +103,9 @@ async function logout() {
     if (sessionId) {
       await supabaseService.deleteSession(sessionId);
     }
-  } catch (e) {}
+  } catch (e) {
+    console.warn('فشل حذف الجلسة من Supabase:', e);
+  }
 
   storageService.clearAll();
   localStorage.removeItem('sessionId');
@@ -141,16 +149,19 @@ async function refreshSessions() {
   try {
     const serverSessions = await supabaseService.getSessions(email);
     const currentSessionId = localStorage.getItem('sessionId');
-    const mapped = serverSessions.map((s, index) => ({
-      id: index,
+    const mapped: UserSession[] = serverSessions.map((s, idx) => ({
+      id: idx,
+      sessionId: s.session_id,
       time: s.time || '',
       os: s.os || 'غير معروف',
       ip: s.ip || 'غير معروف',
       isCurrent: s.session_id === currentSessionId,
     }));
     setSessions(mapped);
+    console.log('تم تحميل الجلسات:', mapped);
   } catch (e) {
-    console.warn('تعذر جلب الجلسات من Supabase', e);
+    console.error('فشل جلب الجلسات من Supabase:', e);
+    setSessions([]);
   }
 }
 

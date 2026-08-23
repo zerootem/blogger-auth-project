@@ -16,7 +16,6 @@ export function DashboardPage() {
   let settingsButton: HTMLButtonElement | undefined;
 
   const ensureCurrentSession = async () => {
-    // لا نضيف جلسة محلية بعد الآن، فقط نزامن من Supabase
     await authStore.refreshSessions();
   };
 
@@ -50,12 +49,9 @@ export function DashboardPage() {
 
   const sessions = () => authStore.sessions();
 
-  const handleRemoveSession = async (idx: number) => {
-    const session = sessions()[idx];
-    const allServerSessions = await supabaseService.getSessions(authStore.userEmail());
-    const target = allServerSessions.find(s => s.time === session.time && s.os === session.os);
-    if (target) {
-      await supabaseService.deleteSession(target.session_id);
+  const handleRemoveSession = async (session: UserSession) => {
+    if (session.sessionId) {
+      await supabaseService.deleteSession(session.sessionId);
       await authStore.refreshSessions();
       toastService.show('تم إزالة الجلسة');
     }
@@ -118,7 +114,7 @@ export function DashboardPage() {
             {sessions().length === 0 ? (
               <div style="font-size:.65rem;color:var(--bodyCa)">لا توجد جلسات</div>
             ) : (
-              sessions().map((session, idx) => (
+              sessions().map((session) => (
                 <div class="sessionItem">
                   <div class="info">
                     <div style="display:flex;align-items:center;gap:3px;">
@@ -144,7 +140,7 @@ export function DashboardPage() {
                         <svg class="line" viewBox="0 0 24 24" style="width:20px;height:20px;flex-shrink:0;"><path d="M17.4399 14.62L19.9999 12.06L17.4399 9.5"/><path d="M9.76001 12.0601H19.93"/><path d="M11.76 20C7.34001 20 3.76001 17 3.76001 12C3.76001 7 7.34001 4 11.76 4"/></svg>
                       </button>
                     ) : (
-                      <button class="btnRemove" onClick={() => handleRemoveSession(idx)}>✕</button>
+                      <button class="btnRemove" onClick={() => handleRemoveSession(session)}>✕</button>
                     )}
                   </div>
                 </div>

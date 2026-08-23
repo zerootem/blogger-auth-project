@@ -4,11 +4,14 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/config/supabase';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export interface SessionRecord {
+  id?: string;
+  user_email: string;
   session_id: string;
   time: string;
   os: string;
   ip: string;
   is_current: boolean;
+  created_at?: string;
 }
 
 export const supabaseService = {
@@ -88,7 +91,7 @@ export const supabaseService = {
   },
 
   // ---- الجلسات ----
-  async createSession(session: SessionRecord & { user_email: string }) {
+  async createSession(session: SessionRecord) {
     const { data, error } = await supabase
       .from('sessions')
       .upsert(session, { onConflict: 'session_id' })
@@ -104,7 +107,10 @@ export const supabaseService = {
       .select('*')
       .eq('user_email', user_email)
       .order('created_at', { ascending: false });
-    if (error) return [];
+    if (error) {
+      console.error('Supabase getSessions error:', error);
+      return [];
+    }
     return data as SessionRecord[];
   },
 
