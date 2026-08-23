@@ -1,6 +1,7 @@
 import { createSignal, onMount, createEffect, onCleanup } from 'solid-js';
 import { authStore } from '@/stores/auth.store';
 import { storageService } from '@/services/storage.service';
+import { supabaseService } from '@/services/supabase.service';
 import { toastService } from '@/services/toast.service';
 import type { UserSession } from '@/types';
 
@@ -15,32 +16,8 @@ export function DashboardPage() {
   let settingsButton: HTMLButtonElement | undefined;
 
   const ensureCurrentSession = async () => {
-    let sessions = storageService.getSessions();
-    const hasCurrent = sessions.some(s => s.isCurrent);
-    if (!hasCurrent) {
-      let ip = 'غير معروف';
-      try {
-        const res = await fetch('https://api.ipify.org?format=json');
-        const data = await res.json();
-        ip = data.ip || 'غير معروف';
-      } catch (e) {
-        console.warn('تعذر جلب IP');
-      }
-
-      const newSession: UserSession = {
-        id: Date.now(),
-        time: new Date().toLocaleString('en-US', {
-          day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-        }),
-        os: navigator.userAgent.includes('Win') ? 'Windows' :
-            navigator.userAgent.includes('Mac') ? 'Mac' :
-            navigator.userAgent.includes('Linux') ? 'Linux' : 'Android/iOS',
-        ip: ip,
-        isCurrent: true
-      };
-      storageService.addSession(newSession);
-    }
-    authStore.refreshSessions();
+    // لا نضيف جلسة محلية بعد الآن، فقط نزامن من Supabase
+    await authStore.refreshSessions();
   };
 
   createEffect(() => {
@@ -71,21 +48,21 @@ export function DashboardPage() {
     document.removeEventListener('click', handleOutsideClick);
   });
 
-  const sessions = () => authStore.sessions().slice().sort((a, b) => b.id - a.id);
+  const sessions = () => authStore.sessions();
 
-  const handleRemoveSession = (idx: number) => {
-    const sessionToRemove = sessions()[idx];
-    const allSessions = storageService.getSessions();
-    const realIndex = allSessions.findIndex(s => s.id === sessionToRemove.id);
-    if (realIndex !== -1) {
-      storageService.removeSession(realIndex);
-      authStore.refreshSessions();
+  const handleRemoveSession = async (idx: number) => {
+    const session = sessions()[idx];
+    const allServerSessions = await supabaseService.getSessions(authStore.userEmail());
+    const target = allServerSessions.find(s => s.time === session.time && s.os === session.os);
+    if (target) {
+      await supabaseService.deleteSession(target.session_id);
+      await authStore.refreshSessions();
       toastService.show('تم إزالة الجلسة');
     }
   };
 
-  const handleLogout = () => {
-    authStore.logout();
+  const handleLogout = async () => {
+    await authStore.logout();
     toastService.show('تم تسجيل الخروج بنجاح!');
   };
 
