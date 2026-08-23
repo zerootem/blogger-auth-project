@@ -1,7 +1,6 @@
 import { createSignal, onMount, createEffect, onCleanup } from 'solid-js';
 import { authStore } from '@/stores/auth.store';
 import { storageService } from '@/services/storage.service';
-import { supabaseService } from '@/services/supabase.service';
 import { toastService } from '@/services/toast.service';
 import type { UserSession } from '@/types';
 
@@ -16,7 +15,32 @@ export function DashboardPage() {
   let settingsButton: HTMLButtonElement | undefined;
 
   const ensureCurrentSession = async () => {
-    await authStore.refreshSessions();
+    let sessions = storageService.getSessions();
+    const hasCurrent = sessions.some(s => s.isCurrent);
+    if (!hasCurrent) {
+      let ip = 'غير معروف';
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        ip = data.ip || 'غير معروف';
+      } catch (e) {
+        console.warn('تعذر جلب IP');
+      }
+
+      const newSession: UserSession = {
+        id: Date.now(),
+        time: new Date().toLocaleString('en-US', {
+          day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        }),
+        os: navigator.userAgent.includes('Win') ? 'Windows' :
+            navigator.userAgent.includes('Mac') ? 'Mac' :
+            navigator.userAgent.includes('Linux') ? 'Linux' : 'Android/iOS',
+        ip: ip,
+        isCurrent: true
+      };
+      storageService.addSession(newSession);
+    }
+    authStore.refreshSessions();
   };
 
   createEffect(() => {
@@ -47,18 +71,21 @@ export function DashboardPage() {
     document.removeEventListener('click', handleOutsideClick);
   });
 
-  const sessions = () => authStore.sessions();
+  const sessions = () => authStore.sessions().slice().sort((a, b) => b.id - a.id);
 
-  const handleRemoveSession = async (session: UserSession) => {
-    if (session.sessionId) {
-      await supabaseService.deleteSession(session.sessionId);
-      await authStore.refreshSessions();
+  const handleRemoveSession = (idx: number) => {
+    const sessionToRemove = sessions()[idx];
+    const allSessions = storageService.getSessions();
+    const realIndex = allSessions.findIndex(s => s.id === sessionToRemove.id);
+    if (realIndex !== -1) {
+      storageService.removeSession(realIndex);
+      authStore.refreshSessions();
       toastService.show('تم إزالة الجلسة');
     }
   };
 
-  const handleLogout = async () => {
-    await authStore.logout();
+  const handleLogout = () => {
+    authStore.logout();
     toastService.show('تم تسجيل الخروج بنجاح!');
   };
 
@@ -114,7 +141,7 @@ export function DashboardPage() {
             {sessions().length === 0 ? (
               <div style="font-size:.65rem;color:var(--bodyCa)">لا توجد جلسات</div>
             ) : (
-              sessions().map((session) => (
+              sessions().map((session, idx) => (
                 <div class="sessionItem">
                   <div class="info">
                     <div style="display:flex;align-items:center;gap:3px;">
@@ -140,7 +167,7 @@ export function DashboardPage() {
                         <svg class="line" viewBox="0 0 24 24" style="width:20px;height:20px;flex-shrink:0;"><path d="M17.4399 14.62L19.9999 12.06L17.4399 9.5"/><path d="M9.76001 12.0601H19.93"/><path d="M11.76 20C7.34001 20 3.76001 17 3.76001 12C3.76001 7 7.34001 4 11.76 4"/></svg>
                       </button>
                     ) : (
-                      <button class="btnRemove" onClick={() => handleRemoveSession(session)}>✕</button>
+                      <button class="btnRemove" onClick={() => handleRemoveSession(idx)}>✕</button>
                     )}
                   </div>
                 </div>

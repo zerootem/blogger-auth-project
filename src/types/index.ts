@@ -1,6 +1,5 @@
 export interface UserSession {
   id: number;
-  sessionId?: string;
   time: string;
   os: string;
   ip: string;

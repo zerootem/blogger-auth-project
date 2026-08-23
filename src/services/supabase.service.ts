@@ -3,19 +3,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/config/supabase';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-export interface SessionRecord {
-  id?: string;
-  user_email: string;
-  session_id: string;
-  time: string;
-  os: string;
-  ip: string;
-  is_current: boolean;
-  created_at?: string;
-}
-
 export const supabaseService = {
-  // ---- الملف الشخصي ----
   async getProfile(email: string) {
     const { data, error } = await supabase
       .from('profiles')
@@ -88,45 +76,5 @@ export const supabaseService = {
       keys.forEach(k => trimmed[k] = history[k]);
       await supabase.from('profiles').update({ login_history: trimmed }).eq('email', email);
     }
-  },
-
-  // ---- الجلسات ----
-  async createSession(session: SessionRecord) {
-    const { data, error } = await supabase
-      .from('sessions')
-      .upsert(session, { onConflict: 'session_id' })
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
-  },
-
-  async getSessions(user_email: string): Promise<SessionRecord[]> {
-    const { data, error } = await supabase
-      .from('sessions')
-      .select('*')
-      .eq('user_email', user_email)
-      .order('created_at', { ascending: false });
-    if (error) {
-      console.error('Supabase getSessions error:', error);
-      return [];
-    }
-    return data as SessionRecord[];
-  },
-
-  async deleteSession(session_id: string) {
-    const { error } = await supabase
-      .from('sessions')
-      .delete()
-      .eq('session_id', session_id);
-    if (error) throw error;
-  },
-
-  async deleteAllSessions(user_email: string) {
-    const { error } = await supabase
-      .from('sessions')
-      .delete()
-      .eq('user_email', user_email);
-    if (error) throw error;
   },
 };
