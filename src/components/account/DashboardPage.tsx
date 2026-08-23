@@ -1,6 +1,7 @@
 import { createSignal, onMount, createEffect, onCleanup } from 'solid-js';
 import { authStore } from '@/stores/auth.store';
 import { storageService } from '@/services/storage.service';
+import { supabaseService } from '@/services/supabase.service';
 import { toastService } from '@/services/toast.service';
 import type { UserSession } from '@/types';
 
@@ -14,28 +15,17 @@ export function DashboardPage() {
   let settingsPanel: HTMLDivElement | undefined;
   let settingsButton: HTMLButtonElement | undefined;
 
-  const ensureCurrentSession = async () => {
+  const ensureCurrentSession = () => {
     let sessions = storageService.getSessions();
     const hasCurrent = sessions.some(s => s.isCurrent);
     if (!hasCurrent) {
-      let ip = 'غير معروف';
-      try {
-        const res = await fetch('https://api.ipify.org?format=json');
-        const data = await res.json();
-        ip = data.ip || 'غير معروف';
-      } catch (e) {
-        console.warn('تعذر جلب IP');
-      }
-
       const newSession: UserSession = {
         id: Date.now(),
-        time: new Date().toLocaleString('en-US', {
-          day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-        }),
+        time: new Date().toLocaleString('en-US', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
         os: navigator.userAgent.includes('Win') ? 'Windows' :
             navigator.userAgent.includes('Mac') ? 'Mac' :
             navigator.userAgent.includes('Linux') ? 'Linux' : 'Android/iOS',
-        ip: ip,
+        ip: 'محلي',
         isCurrent: true
       };
       storageService.addSession(newSession);
@@ -71,9 +61,9 @@ export function DashboardPage() {
     document.removeEventListener('click', handleOutsideClick);
   });
 
-  const sessions = () => authStore.sessions().slice().sort((a, b) => b.id - a.id);
+  const sessions = () => authStore.sessions();
 
-  const handleRemoveSession = (idx: number) => {
+  const handleRemoveSession = async (idx: number) => {
     const sessionToRemove = sessions()[idx];
     const allSessions = storageService.getSessions();
     const realIndex = allSessions.findIndex(s => s.id === sessionToRemove.id);
@@ -178,15 +168,15 @@ export function DashboardPage() {
           <div ref={settingsPanel} class="editPanel" style={{ display: showSettings() ? 'block' : 'none' }}>
             <form onSubmit={handleEditSubmit}>
               <label for="editName">الاسم:</label>
-              <input type="text" id="editName" name="name" ref={nameInput} class="input" value={authStore.userName()} maxlength="32" required />
+              <input type="text" id="editName" name="name" autocomplete="name" ref={nameInput} class="input" value={authStore.userName()} maxlength="32" required />
               <label for="editBio">النبذة / الوصف:</label>
-              <textarea id="editBio" name="bio" ref={bioInput} class="input" style="height:60px;resize:vertical;" placeholder="أضف نبذة قصيرة عنك">{authStore.userBio()}</textarea>
+              <textarea id="editBio" name="bio" autocomplete="off" ref={bioInput} class="input" style="height:60px;resize:vertical;" placeholder="أضف نبذة قصيرة عنك">{authStore.userBio()}</textarea>
               <div class="border-t my-2" />
               <div class="text-sm">تغيير الصورة:</div>
               <label for="editPicFile" class="block mb-1">(رفع صورة من جهازك)</label>
-              <input type="file" id="editPicFile" name="pictureFile" ref={picFileInput} accept="image/*" class="input" />
+              <input type="file" id="editPicFile" name="pictureFile" autocomplete="off" ref={picFileInput} accept="image/*" class="input" />
               <label for="editPicUrl" class="block">(أو رابط مباشر للصورة)</label>
-              <input type="url" id="editPicUrl" name="pictureUrl" ref={picUrlInput} class="input" placeholder="https://example.com/avatar.jpg" />
+              <input type="url" id="editPicUrl" name="pictureUrl" autocomplete="url" ref={picUrlInput} class="input" placeholder="https://example.com/avatar.jpg" />
               <button type="submit" class="button primary w-full mt-2">حفظ التعديلات</button>
             </form>
           </div>

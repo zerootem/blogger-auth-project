@@ -34,6 +34,7 @@ export function LoginPage() {
           type="email"
           id="guestEmail"
           name="email"
+          autocomplete="email"
           ref={guestEmailRef}
           placeholder="البريد الإلكتروني"
           value=""
