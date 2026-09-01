@@ -24,9 +24,21 @@ export default defineConfig({
         toast: path.resolve(import.meta.dirname, 'src/toast-main.ts'),
       },
       output: {
-        entryFileNames: 'assets/[name].[hash].js',
+        entryFileNames: (chunkInfo) => {
+          const mod = chunkInfo.facadeModuleId || '';
+          if (mod.includes('/src/main.tsx')) return 'assets/auth.js';
+          if (mod.includes('/src/fab-main.tsx')) return 'assets/fab.js';
+          if (mod.includes('/src/toast-main.ts')) return 'assets/toast.js';
+          return 'assets/[name].[hash].js';
+        },
         chunkFileNames: 'assets/[name]-chunk.[hash].js',
-        assetFileNames: 'assets/[name].[hash][extname]',
+        assetFileNames: (assetInfo) => {
+          const name = assetInfo.name || '';
+          if (name === 'auth.css') return 'assets/auth.css';
+          if (name === 'toast.css') return 'assets/toast.css';
+          if (name === 'fab.css') return 'assets/fab.css';
+          return 'assets/[name].[hash][extname]';
+        },
       },
     },
   },

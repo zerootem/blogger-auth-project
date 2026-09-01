@@ -89,18 +89,15 @@ function showActionToast(message: string, actionLabel: string, actionOnClick: ()
 (window as any).showUpdateToast = showUpdateToast;
 (window as any).showActionToast = showActionToast;
 
+// منطق الخمول: يظهر التنبيه بعد 30 ثانية من عدم النشاط
 let lastActivity = Date.now();
 let idleToastShown = false;
 const IDLE_DELAY = 30000;
 
 function resetActivity(e?: Event) {
-  // الإصلاح: التحقق من أن target عنصر HTML ويملك closest
   const target = e?.target;
   if (target && target instanceof Element && typeof (target as Element).closest === 'function') {
-    const el = target as Element;
-    if (el.closest('.pwa-toast-refresh, .pwa-toast-close')) {
-      return; // لا نغلق التنبيه إذا كان النقر على زر تحديث أو إغلاق
-    }
+    if ((target as Element).closest('.pwa-toast-refresh, .pwa-toast-close')) return;
   }
   lastActivity = Date.now();
   if (idleToastShown) {
@@ -122,3 +119,33 @@ setInterval(() => {
     showUpdateToast();
   }
 }, 1000);
+
+// ===== كشف التحديثات عبر MutationObserver =====
+let lastChangeTime = Date.now();
+let updateToastShown = false;
+
+const observer = new MutationObserver((mutations) => {
+  const significant = mutations.some(m => {
+    const added = m.addedNodes.length;
+    const removed = m.removedNodes.length;
+    // نتجاهل التغييرات الصغيرة جداً
+    return added > 0 || removed > 0;
+  });
+
+  if (significant) {
+    const now = Date.now();
+    // إذا حدث تغيير بعد تحميل الصفحة بأكثر من 10 ثوان
+    if (now - lastChangeTime > 10000 && !updateToastShown) {
+      updateToastShown = true;
+      showUpdateToast();
+    } else {
+      lastChangeTime = now;
+    }
+  }
+});
+
+// مراقبة الجسم بالكامل
+observer.observe(document.body, {
+  childList: true,
+  subtree: true,
+});
