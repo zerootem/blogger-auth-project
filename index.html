@@ -1,32 +1,75 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>مود ويب - المصادقة</title>
-    <style>
-      /* سيتم إضافة التنسيقات الأساسية هنا أثناء التطوير */
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: system-ui, -apple-system, sans-serif;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- عنصر جذر التطبيق داخل Blogger -->
-    <div id="modpro-auth-root"></div>
-    
-    <!-- عناصر وهمية للاختبار المحلي -->
-    <div style="position:fixed;top:16px;left:16px;z-index:100;">
-      <label class="tIc" for="acntToggle" role="button" style="cursor:pointer;display:block;padding:8px;">
-        <span class="tAcnt"><span><i></i></span></span>
-      </label>
-    </div>
-    <input class="acntI" hidden="" id="acntToggle" type="checkbox" />
-    <div class="acntW" style="position:fixed;top:60px;left:16px;min-width:180px;z-index:100;"></div>
-    <label class="fCls" for="acntToggle" />
+<head>
+  <meta charset="UTF-8" />
+  <title>معاينة المصادقة — وضع الجوال</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #f5f5f5;
+      position: relative;
+      min-height: 100vh;
+    }
+    .preview-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+    }
+    .preview-btn {
+      padding: 14px 28px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+    }
 
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    /* محاكاة الجوال: نجبر النافذة على الظهور من الأسفل */
+    .lgnBottomSheet {
+      align-items: flex-end !important;
+    }
+    .lgnSheet {
+      position: fixed !important;
+      bottom: -60px !important;
+      top: auto !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      border-radius: 12px 12px 0 0 !important;
+      transform: none !important;
+      height: auto !important;
+      max-height: 70vh !important;
+      transition: bottom var(--trans-2, 0.3s) !important;
+    }
+    .lgnBottomSheet.visible .lgnSheet {
+      bottom: 0 !important;
+      transform: none !important;
+    }
+    .lgnOverlay {
+      display: block !important;
+      position: fixed !important;
+      inset: 0 !important;
+      background: rgba(0,0,0,.3) !important;
+      -webkit-backdrop-filter: saturate(180%) blur(10px) !important;
+      backdrop-filter: saturate(180%) blur(10px) !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <button class="preview-btn" onclick="window.openAccountSheet && window.openAccountSheet()">🔐 فتح نافذة الحساب</button>
+  </div>
+
+  <div id="modpro-auth-root"></div>
+  <div id="vue-toast-root"></div>
+
+  <script type="module" src="/src/main.tsx"></script>
+  <script type="module" src="/src/toast-main.ts"></script>
+</body>
 </html>

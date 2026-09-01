@@ -21,16 +21,28 @@ import '@/styles/auth.css';
 
 // تتبع زيارة المقال
 function trackArticleVisit() {
-  // نكتشف عنوان المقال من الصفحة
   const titleElement = document.querySelector('h1.post-title, h1.entry-title, h3.post-title a');
   const title = titleElement?.textContent?.trim() || document.title.split('|')[0].trim();
   const url = window.location.href;
 
-  if (title && window.location.pathname.includes('/p/') || window.location.pathname.includes('.html')) {
+  if (title && (window.location.pathname.includes('/p/') || window.location.pathname.includes('.html'))) {
     storageService.setLastVisitedArticle(title, url);
     if (authStore.isLoggedIn()) {
       supabaseService.setLastVisitedArticle(authStore.userEmail(), { title, url });
     }
+  }
+}
+
+// تحميل نظام التنبيهات المستقل
+async function initToastSystem() {
+  if (!document.getElementById('vue-toast-root')) {
+    const container = document.createElement('div');
+    container.id = 'vue-toast-root';
+    document.body.appendChild(container);
+  }
+  // نحمّل ملف toast.js إذا لم يُحمل مسبقًا
+  if (!(window as any).toast) {
+    await import('./toast-main');
   }
 }
 
@@ -53,6 +65,9 @@ function initApp() {
   if (authStore.isLoggedIn()) {
     communityService.addCurrentUserToCommunity();
   }
+
+  // بدء نظام التنبيهات دائمًا
+  initToastSystem();
 
   if (typeof (window as any).updateAccountUI === 'function') {
     (window as any).updateAccountUI();
