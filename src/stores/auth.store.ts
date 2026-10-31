@@ -29,22 +29,17 @@ async function login(name: string, email: string, picture: string) {
   setUserPicture(picture);
   setJoinDate(now);
 
+  storageService.incrementLoginCount();
+  storageService.setSessionStartTime();
+
   try {
-    // تحقق مما إذا كان الملف موجودًا
     const profile = await supabaseService.getProfile(email);
     if (profile) {
-      // استرجع البيانات المحفوظة
-      setUserName(profile.name || name);
-      setUserPicture(profile.picture || picture);
       setUserBio(profile.bio || '');
-      storageService.setUserName(profile.name || name);
-      storageService.setUserPicture(profile.picture || picture);
       storageService.setUserBio(profile.bio || '');
     } else {
-      // أنشئ ملفًا جديدًا
       await supabaseService.upsertProfile({ email, name, picture, bio: '' });
     }
-
     await supabaseService.incrementLoginCount(email);
     await supabaseService.addLoginToHistory(email);
     await supabaseService.setSessionStart(email);
