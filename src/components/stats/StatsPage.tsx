@@ -110,27 +110,50 @@ export function StatsPage() {
   };
 
   onMount(async () => {
+    // 1. قراءة من localStorage أولاً
+    setLoginCount(storageService.getLoginCount());
+    setSessionStart(storageService.getSessionStartTime());
+    setLoginHistory(storageService.getLoginHistory());
     const localArticle = storageService.getLastVisitedArticle();
     if (localArticle) setLastArticle(localArticle);
 
+    // 2. إثراء من Supabase (إن وُجدت بيانات أحدث)
     const email = authStore.userEmail();
     if (email) {
-      const profile = await supabaseService.getProfile(email);
-      if (profile) {
-        setLoginCount(profile.login_count || 0);
-        setSessionStart(profile.session_start || null);
-        setLoginHistory(profile.login_history || {});
-        if (!localArticle && profile.last_visited_article) {
-          setLastArticle(profile.last_visited_article);
+      try {
+        const profile = await supabaseService.getProfile(email);
+        if (profile) {
+          const serverCount = profile.login_count || 0;
+          const localCount = storageService.getLoginCount();
+          if (serverCount > localCount) {
+            setLoginCount(serverCount);
+            localStorage.setItem('loginCount', serverCount.toString());
+          }
+
+          const serverHistory = profile.login_history || {};
+          const localHistory = storageService.getLoginHistory();
+          const merged: Record<string, number> = { ...localHistory };
+          Object.keys(serverHistory).forEach(k => {
+            merged[k] = Math.max(merged[k] || 0, serverHistory[k]);
+          });
+          setLoginHistory(merged);
+          localStorage.setItem('loginHistory', JSON.stringify(merged));
+
+          if (!localArticle && profile.last_visited_article) {
+            setLastArticle(profile.last_visited_article);
+          }
         }
+      } catch (e) {
+        console.warn('Supabase enrich skipped:', e);
       }
     }
 
+    // 3. تحميل الرسم البياني
     try {
       await loadChartJs();
       createChart();
     } catch (e) {
-      console.warn('تعذر تحميل Chart.js', e);
+      console.warn('Chart.js load failed:', e);
     }
   });
 
